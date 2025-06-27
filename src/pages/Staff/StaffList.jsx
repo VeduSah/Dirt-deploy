@@ -86,7 +86,7 @@ const StaffList = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-[100%] mx-auto px-4 py-4 bg-gradient-to-br from-purple-100 via-white to-purple-50">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-[#a997cb]">Staff Directory</h2>
         <Link

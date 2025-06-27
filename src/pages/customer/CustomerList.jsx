@@ -115,16 +115,42 @@ const CustomerList = () => {
     }
   };
 
-  // if (loading)
-  //   return (
-  //     <p className="text-theme-purple text-center mt-10">
-  //       Loading customers...
-  //     </p>
-  //   );
+  const SkeletonRow = () => (
+    <tr className="animate-pulse">
+      <td className="px-4 py-2 border">
+        <div className="h-4 bg-gray-200 rounded w-8"></div>
+      </td>
+      <td className="px-4 py-2 border">
+        <div className="h-4 bg-gray-200 rounded w-20"></div>
+      </td>
+      <td className="px-4 py-2 border">
+        <div className="h-4 bg-gray-200 rounded w-20"></div>
+      </td>
+      <td className="px-4 py-2 border">
+        <div className="h-4 bg-gray-200 rounded w-24"></div>
+      </td>
+      <td className="px-4 py-2 border">
+        <div className="h-4 bg-gray-200 rounded w-32"></div>
+      </td>
+      <td className="px-4 py-2 border">
+        <div className="h-4 bg-gray-200 rounded w-40"></div>
+      </td>
+      <td className="px-4 py-2 border">
+        <div className="h-4 bg-gray-200 rounded w-16"></div>
+      </td>
+      <td className="px-4 py-2 border">
+        <div className="flex justify-center space-x-2">
+          <div className="h-4 bg-gray-200 rounded w-8"></div>
+          <div className="h-4 bg-gray-200 rounded w-8"></div>
+        </div>
+      </td>
+    </tr>
+  );
+
   if (error) return <p className="text-red-600 text-center mt-10">{error}</p>;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-[100%] mx-auto px-4 py-4 bg-gradient-to-br from-purple-100 via-white to-purple-50">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-theme-purple">
           Customer Directory
@@ -163,23 +189,35 @@ const CustomerList = () => {
         <table className="min-w-full border border-gray-200 shadow-sm rounded-lg overflow-hidden">
           <thead className="bg-theme-purple/20 text-theme-purple">
             <tr>
-              <th className="text-center px-4 py-2 border">S No.</th>
-              <th className="text-left px-4 py-2 border">First Name</th>
-              <th className="text-left px-4 py-2 border">Last Name</th>
-              <th className="text-left px-4 py-2 border">Phone</th>
-              <th className="text-left px-4 py-2 border">Email</th>
-              <th className="text-left px-4 py-2 border">Address</th>
-              <th className="text-left px-4 py-2 border">Postal Code</th>
+              <th className="text-center px-4 py-2 border whitespace-nowrap">
+                S No.
+              </th>
+              <th className="text-left px-4 py-2 border whitespace-nowrap">
+                First Name
+              </th>
+              <th className="text-left px-4 py-2 border whitespace-nowrap">
+                Last Name
+              </th>
+              <th className="text-left px-4 py-2 border whitespace-nowrap">
+                Phone
+              </th>
+              <th className="text-left px-4 py-2 border whitespace-nowrap">
+                Email
+              </th>
+              <th className="text-left px-4 py-2 border whitespace-nowrap">
+                Address
+              </th>
+              <th className="text-left px-4 py-2 border whitespace-nowrap">
+                Postal Code
+              </th>
               <th className="text-center px-4 py-2 border">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white">
             {loading ? (
-              <tr>
-                <td colSpan="8" className="text-center py-8 text-gray-600">
-                  Loading customers...
-                </td>
-              </tr>
+              Array.from({ length: 5 }).map((_, index) => (
+                <SkeletonRow key={index} />
+              ))
             ) : customers.length === 0 ? (
               <tr>
                 <td colSpan="8" className="text-center py-8 text-gray-500">

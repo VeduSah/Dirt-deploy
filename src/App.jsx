@@ -50,9 +50,22 @@ const App = () => {
       navigate("/login");
     }
   }, [currentUser]);
+
   useEffect(() => {
-    if (location.pathname == "") {
+    const path = location.pathname.toLowerCase();
+
+    if (path === "/" || path === "/dashboard") {
       setActiveLink("dashboard");
+    } else if (path.includes("/entry")) {
+      setActiveLink("New Entry");
+    } else if (path.includes("/customer")) {
+      setActiveLink("Customer");
+    } else if (path.includes("/product")) {
+      setActiveLink("Product");
+    } else if (path.includes("/staff")) {
+      setActiveLink("Staff");
+    } else if (path.includes("/service")) {
+      setActiveLink("Services");
     }
   }, [location.pathname]);
 
@@ -571,6 +584,7 @@ const App = () => {
 
             <div className="px-6 pt-6 bg-white">
               <Routes>
+                <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />
 
                 <Route path="/LaundryBill" element={<LaundryBill />} />

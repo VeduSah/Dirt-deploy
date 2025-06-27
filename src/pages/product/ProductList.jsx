@@ -72,10 +72,33 @@ const ProductList = () => {
     }
   };
 
+  const SkeletonRow = () => (
+    <tr className="animate-pulse">
+      <td className="px-4 py-2 border">
+        <div className="h-4 bg-gray-200 rounded w-8"></div>
+      </td>
+      <td className="px-4 py-2 border">
+        <div className="h-4 bg-gray-200 rounded w-32"></div>
+      </td>
+      <td className="px-4 py-2 border">
+        <div className="h-4 bg-gray-200 rounded w-16"></div>
+      </td>
+      <td className="px-4 py-2 border">
+        <div className="h-4 bg-gray-200 rounded w-12"></div>
+      </td>
+      <td className="px-4 py-2 border">
+        <div className="flex justify-center space-x-2">
+          <div className="h-4 bg-gray-200 rounded w-8"></div>
+          <div className="h-4 bg-gray-200 rounded w-8"></div>
+        </div>
+      </td>
+    </tr>
+  );
+
   if (error) return <p className="text-red-600 text-center mt-10">{error}</p>;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-[100%] mx-auto px-4 py-4 bg-gradient-to-br from-purple-100 via-white to-purple-50">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-[#a997cb]">
           Products Directory
@@ -131,11 +154,9 @@ const ProductList = () => {
             </thead>
             <tbody className="bg-white">
               {loading ? (
-                <tr>
-                  <td colSpan="5" className="text-center py-8 text-gray-600">
-                    Loading products...
-                  </td>
-                </tr>
+                Array.from({ length: 5 }).map((_, index) => (
+                  <SkeletonRow key={index} />
+                ))
               ) : products.length === 0 ? (
                 <tr>
                   <td colSpan="5" className="text-center py-8 text-gray-500">

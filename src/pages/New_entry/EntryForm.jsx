@@ -11,6 +11,7 @@ const EntryForm = () => {
   const [formData, setFormData] = useState({
     customer: "",
     customerId: "",
+    customerPhone: "",
     status: "pending",
     products: [
       { productName: "", quantity: 1, unitPrice: 0, amount: 0, taxPer: 0 },
@@ -126,6 +127,7 @@ const EntryForm = () => {
         ...prev,
         customer: addedCustomer.firstName,
         customerId: addedCustomer._id,
+        customerPhone: addedCustomer.phone || "", // Add this line
         pickupAndDelivery: {
           ...prev.pickupAndDelivery,
           pickupAddress: addedCustomer.address || "",
@@ -260,6 +262,7 @@ const EntryForm = () => {
         ...prev,
         customer: value,
         customerId: selectedCustomer?._id || "",
+        customerPhone: selectedCustomer?.phone || "", // Add this line
         pickupAndDelivery: {
           ...prev.pickupAndDelivery,
           pickupAddress: selectedCustomer?.address || "",
@@ -629,6 +632,7 @@ const EntryForm = () => {
             name="expectedDeliveryDate"
             value={formData.pickupAndDelivery.expectedDeliveryDate || ""}
             onChange={handleChange}
+            min={new Date().toISOString().split("T")[0]}
             className="w-full border px-3 py-2 rounded"
           />
         </div>
