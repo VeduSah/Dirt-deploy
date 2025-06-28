@@ -167,13 +167,13 @@ const StaffList = () => {
             <tbody className="bg-white">
               {loading ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-8 text-gray-600">
-                    Loading staff...
+                  <td colSpan="8" className="text-center py-8 text-gray-500">
+                    Loading...
                   </td>
                 </tr>
               ) : staff.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-8 text-gray-500">
+                  <td colSpan="8" className="text-center py-8 text-gray-500">
                     {isSearching
                       ? `No staff found matching "${searchQuery}".`
                       : "No staff found."}
@@ -217,7 +217,7 @@ const StaffList = () => {
         {/* Pagination */}
         {/* {!isSearching && !loading && staff.length > 0 && ( */}
         <div className="flex justify-center items-center mt-6 space-x-2">
-          <LoadingOverlay isLoading={loading} message="Loading staffs..." />
+          {/* <LoadingOverlay isLoading={loading} message="Loading staffs..." /> */}
           <button
             onClick={() => handlePageChange(page - 1)}
             disabled={page === 1}

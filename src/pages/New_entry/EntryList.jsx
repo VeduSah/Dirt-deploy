@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { FaTrashAlt, FaEdit, FaWhatsapp } from "react-icons/fa";
 import { RiNewspaperLine } from "react-icons/ri";
 import QrSection from "../QrSection";
-import LoadingOverlay from "../../components/LoadingOverlay";
+// import LoadingOverlay from "../../components/LoadingOverlay";
 
 const EntryList = () => {
   const [entries, setEntries] = useState([]);
@@ -201,36 +201,36 @@ Thank you for choosing our service!`;
     window.open(whatsappUrl, "_blank");
   };
 
-  const SkeletonRow = () => (
-    <tr className="animate-pulse">
-      <td className="px-4 py-2 border w-[100px]">
-        <div className="h-4 bg-gray-200 rounded "></div>
-      </td>
-      <td className="px-4 py-2 border  w-[115px]">
-        <div className="h-4 bg-gray-200 rounded"></div>
-      </td>
-      <td className="px-4 py-2 border w-[192px]">
-        <div className="h-4 bg-gray-200 rounded "></div>
-      </td>
-      <td className="px-4 py-2 border w-[144px]">
-        <div className="h-4 bg-gray-200 rounded w-20"></div>
-      </td>
-      <td className="px-4 py-2 border w-[155px]">
-        <div className="h-4 bg-gray-200 rounded w-16"></div>
-      </td>
-      <td className="px-4 py-2 border w-[155px]">
-        <div className="h-4 bg-gray-200 rounded w-16"></div>
-      </td>
-      <td className="px-4 py-2 border w-[93px]">
-        <div className="h-6 bg-gray-200 rounded"></div>
-      </td>
-      <td className="px-4 py-2 border w-[155px]">
-        <div className="flex justify-around">
-          <div className="h-4 bg-gray-200 rounded w-12"></div>
-        </div>
-      </td>
-    </tr>
-  );
+  // const SkeletonRow = () => (
+  //   <tr className="animate-pulse">
+  //     <td className="px-4 py-2 border w-[100px]">
+  //       <div className="h-4 bg-gray-200 rounded "></div>
+  //     </td>
+  //     <td className="px-4 py-2 border  w-[115px]">
+  //       <div className="h-4 bg-gray-200 rounded"></div>
+  //     </td>
+  //     <td className="px-4 py-2 border w-[192px]">
+  //       <div className="h-4 bg-gray-200 rounded "></div>
+  //     </td>
+  //     <td className="px-4 py-2 border w-[144px]">
+  //       <div className="h-4 bg-gray-200 rounded w-20"></div>
+  //     </td>
+  //     <td className="px-4 py-2 border w-[155px]">
+  //       <div className="h-4 bg-gray-200 rounded w-16"></div>
+  //     </td>
+  //     <td className="px-4 py-2 border w-[155px]">
+  //       <div className="h-4 bg-gray-200 rounded w-16"></div>
+  //     </td>
+  //     <td className="px-4 py-2 border w-[93px]">
+  //       <div className="h-6 bg-gray-200 rounded"></div>
+  //     </td>
+  //     <td className="px-4 py-2 border w-[155px]">
+  //       <div className="flex justify-around">
+  //         <div className="h-4 bg-gray-200 rounded w-12"></div>
+  //       </div>
+  //     </td>
+  //   </tr>
+  // );
 
   if (error) return <p className="text-red-600 text-center mt-10">{error}</p>;
 
@@ -308,9 +308,11 @@ Thank you for choosing our service!`;
 
             <tbody className="bg-white">
               {loading ? (
-                Array.from({ length: 5 }).map((_, index) => (
-                  <SkeletonRow key={index} />
-                ))
+                <tr>
+                  <td colSpan="8" className="text-center py-8 text-gray-500">
+                    Loading...
+                  </td>
+                </tr>
               ) : entries.length === 0 ? (
                 <tr>
                   <td colSpan="8" className="text-center py-8 text-gray-500">
@@ -401,12 +403,12 @@ Thank you for choosing our service!`;
             </tbody>
           </table>
         </div>
-        <SkeletonRow />
+        {/* <SkeletonRow /> */}
 
         {/* Pagination only when not searching and not loading */}
         {/* {!isSearching && !loading && entries.length > 0 && ( */}
         <div className="flex justify-center items-center mt-6 space-x-2">
-          <LoadingOverlay isLoading={loading} message="Loading entries..." />
+          {/* <LoadingOverlay isLoading={loading} message="Loading entries..." /> */}
           <button
             onClick={() => handlePageChange(page - 1)}
             disabled={page === 1}

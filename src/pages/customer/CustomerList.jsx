@@ -116,37 +116,37 @@ const CustomerList = () => {
     }
   };
 
-  const SkeletonRow = () => (
-    <tr className="animate-pulse">
-      <td className="px-4 py-2 border">
-        <div className="h-4 bg-gray-200 rounded w-8"></div>
-      </td>
-      <td className="px-4 py-2 border">
-        <div className="h-4 bg-gray-200 rounded w-20"></div>
-      </td>
-      <td className="px-4 py-2 border">
-        <div className="h-4 bg-gray-200 rounded w-20"></div>
-      </td>
-      <td className="px-4 py-2 border">
-        <div className="h-4 bg-gray-200 rounded w-24"></div>
-      </td>
-      <td className="px-4 py-2 border">
-        <div className="h-4 bg-gray-200 rounded w-32"></div>
-      </td>
-      <td className="px-4 py-2 border">
-        <div className="h-4 bg-gray-200 rounded w-40"></div>
-      </td>
-      <td className="px-4 py-2 border">
-        <div className="h-4 bg-gray-200 rounded w-16"></div>
-      </td>
-      <td className="px-4 py-2 border">
-        <div className="flex justify-center space-x-2">
-          <div className="h-4 bg-gray-200 rounded w-8"></div>
-          <div className="h-4 bg-gray-200 rounded w-8"></div>
-        </div>
-      </td>
-    </tr>
-  );
+  // const SkeletonRow = () => (
+  //   <tr className="animate-pulse">
+  //     <td className="px-4 py-2 border">
+  //       <div className="h-4 bg-gray-200 rounded w-8"></div>
+  //     </td>
+  //     <td className="px-4 py-2 border">
+  //       <div className="h-4 bg-gray-200 rounded w-20"></div>
+  //     </td>
+  //     <td className="px-4 py-2 border">
+  //       <div className="h-4 bg-gray-200 rounded w-20"></div>
+  //     </td>
+  //     <td className="px-4 py-2 border">
+  //       <div className="h-4 bg-gray-200 rounded w-24"></div>
+  //     </td>
+  //     <td className="px-4 py-2 border">
+  //       <div className="h-4 bg-gray-200 rounded w-32"></div>
+  //     </td>
+  //     <td className="px-4 py-2 border">
+  //       <div className="h-4 bg-gray-200 rounded w-40"></div>
+  //     </td>
+  //     <td className="px-4 py-2 border">
+  //       <div className="h-4 bg-gray-200 rounded w-16"></div>
+  //     </td>
+  //     <td className="px-4 py-2 border">
+  //       <div className="flex justify-center space-x-2">
+  //         <div className="h-4 bg-gray-200 rounded w-8"></div>
+  //         <div className="h-4 bg-gray-200 rounded w-8"></div>
+  //       </div>
+  //     </td>
+  //   </tr>
+  // );
 
   if (error) return <p className="text-red-600 text-center mt-10">{error}</p>;
 
@@ -216,9 +216,11 @@ const CustomerList = () => {
           </thead>
           <tbody className="bg-white">
             {loading ? (
-              Array.from({ length: 5 }).map((_, index) => (
-                <SkeletonRow key={index} />
-              ))
+              <tr>
+                <td colSpan="8" className="text-center py-8 text-gray-500">
+                  Loading...
+                </td>
+              </tr>
             ) : customers.length === 0 ? (
               <tr>
                 <td colSpan="8" className="text-center py-8 text-gray-500">
@@ -261,7 +263,7 @@ const CustomerList = () => {
       {/* Pagination - only when not searching */}
       {/* {!isSearching && !loading && customers.length > 0 && ( */}
       <div className="flex justify-center items-center mt-6 space-x-2">
-        <LoadingOverlay isLoading={loading} message="Loading customers..." />
+        {/* <LoadingOverlay isLoading={loading} message="Loading customers..." /> */}
         <button
           onClick={() => handlePageChange(page - 1)}
           disabled={page === 1}

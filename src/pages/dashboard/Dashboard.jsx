@@ -10,7 +10,7 @@ import {
   FaSpinner,
 } from "react-icons/fa";
 import axios from "axios";
-import LoadingOverlay from "../../components/LoadingOverlay";
+// import LoadingOverlay from "../../components/LoadingOverlay";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -1091,12 +1091,12 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 px-0">
-      <LoadingOverlay
+      {/* <LoadingOverlay
         isLoading={loading || markLoading}
         message={
           markLoading ? "Updating order status..." : "Loading dashboard data..."
         }
-      />
+      /> */}
       <div className="p-6 bg-gradient-to-br from-purple-100 via-white to-purple-50 min-h-screen">
         {/* Header */}
         <div className="mb-8">
