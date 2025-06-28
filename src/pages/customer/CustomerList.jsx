@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
+import LoadingOverlay from "../../components/LoadingOverlay";
 
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
@@ -258,37 +259,38 @@ const CustomerList = () => {
       </div>
 
       {/* Pagination - only when not searching */}
-      {!isSearching && !loading && customers.length > 0 && (
-        <div className="flex justify-center items-center mt-6 space-x-2">
+      {/* {!isSearching && !loading && customers.length > 0 && ( */}
+      <div className="flex justify-center items-center mt-6 space-x-2">
+        <LoadingOverlay isLoading={loading} message="Loading customers..." />
+        <button
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 1}
+          className="px-3 py-1 bg-[#e7e3f5] text-[#a997cb] rounded disabled:opacity-50"
+        >
+          Previous
+        </button>
+        {[...Array(totalPages)].map((_, i) => (
           <button
-            onClick={() => handlePageChange(page - 1)}
-            disabled={page === 1}
-            className="px-3 py-1 bg-[#e7e3f5] text-[#a997cb] rounded disabled:opacity-50"
+            key={i}
+            onClick={() => handlePageChange(i + 1)}
+            className={`px-3 py-1 rounded ${
+              page === i + 1
+                ? "bg-[#a997cb] text-white"
+                : "bg-gray-100 text-gray-600"
+            }`}
           >
-            Previous
+            {i + 1}
           </button>
-          {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i}
-              onClick={() => handlePageChange(i + 1)}
-              className={`px-3 py-1 rounded ${
-                page === i + 1
-                  ? "bg-[#a997cb] text-white"
-                  : "bg-gray-100 text-gray-600"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-          <button
-            onClick={() => handlePageChange(page + 1)}
-            disabled={page === totalPages}
-            className="px-3 py-1 bg-[#e7e3f5] text-[#a997cb] rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
+        ))}
+        <button
+          onClick={() => handlePageChange(page + 1)}
+          disabled={page === totalPages}
+          className="px-3 py-1 bg-[#e7e3f5] text-[#a997cb] rounded disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
+      {/* )} */}
     </div>
   );
 };

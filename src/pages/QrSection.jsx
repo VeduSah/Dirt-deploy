@@ -4,12 +4,16 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import logo from "/src/assets/pcs.png";
 import { useReactToPrint } from "react-to-print";
+import { QRCodeSVG } from "qrcode.react";
 
 const QrSection = () => {
   const { id } = useParams(); // Get the entry ID from URL
   const [entry, setEntry] = useState(null);
   const [loading, setLoading] = useState(true);
   const printRef = useRef();
+  const invoiceUrl = entry
+    ? `${window.location.origin}/LaundryBill/${entry._id}`
+    : "";
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
@@ -123,7 +127,11 @@ const QrSection = () => {
                 </div>
 
                 {/* Date */}
-                <p className="text-gray-500 text-sm mt-3">{today}</p>
+                {/* Date and QR Code in one section */}
+                <div className="flex items-center justify-between mt-3">
+                  <p className="text-gray-500 text-sm">{today}</p>
+                  <QRCodeSVG value={invoiceUrl} size={80} level="M" />
+                </div>
               </div>
             </div>
           ))}

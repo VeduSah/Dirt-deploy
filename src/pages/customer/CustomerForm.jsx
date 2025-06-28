@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-// import toast from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const CustomerForm = ({ isPopup = false, onSubmitSuccess, onCancel }) => {
   const { id } = useParams();
@@ -45,34 +45,34 @@ const CustomerForm = ({ isPopup = false, onSubmitSuccess, onCancel }) => {
     }));
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  //   const url = id
-  //     ? `https://dirt-off-backend-main.vercel.app/custdirt/update/${id}`
-  //     : "https://dirt-off-backend-main.vercel.app/custdirt/create";
+    const url = id
+      ? `https://dirt-off-backend-main.vercel.app/custdirt/update/${id}`
+      : "https://dirt-off-backend-main.vercel.app/custdirt/create";
 
-  //   const method = id ? "put" : "post";
+    const method = id ? "put" : "post";
 
-  //   try {
-  //     const res = await axios[method](url, formData);
+    try {
+      const res = await axios[method](url, formData);
 
-  //     if (fromEntryForm && onSubmitSuccess) {
-  //       onSubmitSuccess(formData);
-  //       return;
-  //     }
+      if (fromEntryForm && onSubmitSuccess) {
+        onSubmitSuccess(formData);
+        return;
+      }
 
-  //     // toast.success(
-  //     //   id ? "Customer updated successfully!" : "Customer added successfully!"
-  //     // );
-  //     navigate("/customerlist");
-  //   } catch (err) {
-  //     // toast.error(err.response?.data?.message || "Something went wrong");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+      toast.success(
+        id ? "Customer updated successfully!" : "Customer added successfully!"
+      );
+      navigate("/customerlist");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>

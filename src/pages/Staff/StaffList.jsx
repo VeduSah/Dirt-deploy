@@ -3,6 +3,8 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import LoadingOverlay from "../../components/LoadingOverlay";
 
 const StaffList = () => {
   const [staff, setStaff] = useState([]);
@@ -12,6 +14,7 @@ const StaffList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [showPasswords, setShowPasswords] = useState({});
   const limit = 10;
 
   const fetchStaff = async (pageNumber = 1) => {
@@ -85,6 +88,25 @@ const StaffList = () => {
     }
   };
 
+  const generatePassword = () => {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+    let password = "";
+    password += "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random() * 26)]; // Capital
+    password += "abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 26)]; // Small
+    password += "0123456789"[Math.floor(Math.random() * 10)]; // Number
+    password += "!@#$%^&*"[Math.floor(Math.random() * 8)]; // Symbol
+
+    for (let i = 4; i < 8; i++) {
+      password += chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    return password
+      .split("")
+      .sort(() => Math.random() - 0.5)
+      .join("");
+  };
+
   return (
     <div className="max-w-[100%] mx-auto px-4 py-4 bg-gradient-to-br from-purple-100 via-white to-purple-50">
       <div className="flex justify-between items-center mb-6">
@@ -137,6 +159,7 @@ const StaffList = () => {
                 <th className="text-left px-4 py-2 border">Last Name</th>
                 <th className="text-left px-4 py-2 border">Phone</th>
                 <th className="text-left px-4 py-2 border">Email</th>
+                <th className="text-left px-4 py-2 border">Password</th>
                 <th className="text-left px-4 py-2 border">Address</th>
                 <th className="text-center px-4 py-2 border">Actions</th>
               </tr>
@@ -166,6 +189,7 @@ const StaffList = () => {
                     <td className="px-4 py-2 border">{cust.lastName}</td>
                     <td className="px-4 py-2 border">{cust.phone}</td>
                     <td className="px-4 py-2 border">{cust.email}</td>
+                    <td className="px-4 py-2 border">{cust.password}</td>
                     <td className="px-4 py-2 border">{cust.address}</td>
                     <td className="px-4 py-2 border text-center">
                       <Link
@@ -191,37 +215,38 @@ const StaffList = () => {
         {/* Pagination */}
 
         {/* Pagination */}
-        {!isSearching && !loading && staff.length > 0 && (
-          <div className="flex justify-center items-center mt-6 space-x-2">
+        {/* {!isSearching && !loading && staff.length > 0 && ( */}
+        <div className="flex justify-center items-center mt-6 space-x-2">
+          <LoadingOverlay isLoading={loading} message="Loading staffs..." />
+          <button
+            onClick={() => handlePageChange(page - 1)}
+            disabled={page === 1}
+            className="px-3 py-1 bg-[#e7e3f5] text-[#a997cb] rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          {[...Array(totalPages)].map((_, i) => (
             <button
-              onClick={() => handlePageChange(page - 1)}
-              disabled={page === 1}
-              className="px-3 py-1 bg-[#e7e3f5] text-[#a997cb] rounded disabled:opacity-50"
+              key={i}
+              onClick={() => handlePageChange(i + 1)}
+              className={`px-3 py-1 rounded ${
+                page === i + 1
+                  ? "bg-[#a997cb] text-white"
+                  : "bg-gray-100 text-gray-600"
+              }`}
             >
-              Previous
+              {i + 1}
             </button>
-            {[...Array(totalPages)].map((_, i) => (
-              <button
-                key={i}
-                onClick={() => handlePageChange(i + 1)}
-                className={`px-3 py-1 rounded ${
-                  page === i + 1
-                    ? "bg-[#a997cb] text-white"
-                    : "bg-gray-100 text-gray-600"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button
-              onClick={() => handlePageChange(page + 1)}
-              disabled={page === totalPages}
-              className="px-3 py-1 bg-[#e7e3f5] text-[#a997cb] rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-        )}
+          ))}
+          <button
+            onClick={() => handlePageChange(page + 1)}
+            disabled={page === totalPages}
+            className="px-3 py-1 bg-[#e7e3f5] text-[#a997cb] rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+        {/* )} */}
       </>
     </div>
   );

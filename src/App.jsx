@@ -1,7 +1,14 @@
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  Navigate,
+} from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { AiFillCloseCircle, AiOutlineMenu } from "react-icons/ai";
+
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import LaundryBill from "./pages/LaudryBill/LaundryBill";
@@ -23,7 +30,7 @@ import ServiceList from "./pages/services/ServiceList";
 
 import EntryForm from "./pages/New_entry/EntryForm";
 import EntryList from "./pages/New_entry/EntryList";
-import QrSection from "./pages/QrSection"; // If you chose option 1
+import QrSection from "./pages/QrSection";
 import Dashboard from "./pages/dashboard/Dashboard";
 
 const App = () => {
@@ -34,6 +41,15 @@ const App = () => {
   const role = localStorage.getItem("role");
   const name = localStorage.getItem("name");
   const moduleAssigned = JSON.parse(localStorage.getItem("module"));
+
+  const userRole = localStorage.getItem("userRole");
+  console.log("Stored userRole in App:", userRole);
+  console.log("userRole === 'admin':", userRole === "admin");
+  const [forceRender, setForceRender] = useState(0);
+
+  console.log("Current userRole:", userRole);
+  console.log("Current path:", location.pathname);
+
   const [ml, setML] = useState(false);
   console.log(name);
   const handleLogout = async () => {
@@ -45,11 +61,28 @@ const App = () => {
     }
   };
   console.log(currentUser);
+
   useEffect(() => {
-    if (!currentUser) {
+    const currentUserRole = localStorage.getItem("userRole");
+    console.log(
+      "useEffect - userRole:",
+      currentUserRole,
+      "path:",
+      location.pathname
+    );
+
+    if (!currentUser && !location.pathname.includes("/LaundryBill")) {
       navigate("/login");
+      // }
+      // else if (currentUser && location.pathname === "/") {
+      //   const userRole = localStorage.getItem("userRole");
+      //   if (userRole === "admin") {
+      //     navigate("/dashboard");
+      //   } else {
+      //     navigate("/entrylist");
+      //   }
     }
-  }, [currentUser]);
+  }, [currentUser, location.pathname]);
 
   useEffect(() => {
     const path = location.pathname.toLowerCase();
@@ -68,6 +101,10 @@ const App = () => {
       setActiveLink("Services");
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    setForceRender((prev) => prev + 1);
+  }, [userRole]);
 
   const setMl = () => {
     if (window.innerWidth < 1023) {
@@ -140,45 +177,48 @@ const App = () => {
                 <span className="hidden text-gray-400 lg:block">{role}</span>
               </div>
 
-              <ul className="mt-4 space-y-2 tracking-wide">
-                <li
-                  onClick={() => {
-                    setActiveLink("dashboard");
-                    navigate("/Dashboard");
-                    setMl();
-                  }}
-                >
-                  <a
-                    href="#"
-                    aria-label="dashboard"
-                    className={
-                      activeLink == "dashboard"
-                        ? "relative flex items-center space-x-4 rounded-xl bg-[#a997cb] px-1 py-2 text-black"
-                        : "relative flex items-center space-x-4 rounded-xl px-1 py-2 text-gray-600 hover:bg-[#e1d9f7]"
-                    }
+              {userRole === "admin" && (
+                <ul className="mt-4 space-y-2 tracking-wide">
+                  <li
+                    onClick={() => {
+                      setActiveLink("dashboard");
+                      navigate("/dashboard"); // Change this from "/Dashboard" to "/dashboard"
+                      setMl();
+                    }}
                   >
-                    <svg
-                      className="-ml-1 h-6 w-6"
-                      viewBox="0 0 24 24"
-                      fill="none"
+                    <a
+                      href="#"
+                      aria-label="dashboard"
+                      className={
+                        activeLink == "dashboard"
+                          ? "relative flex items-center space-x-4 rounded-xl bg-[#a997cb] px-1 py-2 text-black"
+                          : "relative flex items-center space-x-4 rounded-xl px-1 py-2 text-gray-600 hover:bg-[#e1d9f7]"
+                      }
                     >
-                      <path
-                        d="M6 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8ZM6 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1Z"
-                        className="fill-current text-[#6c5a87]"
-                      ></path>
-                      <path
-                        d="M13 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V8Z"
-                        className="fill-current text-[#9a7ec9]"
-                      ></path>
-                      <path
-                        d="M13 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-1Z"
-                        className="fill-current text-[#8f72bb]"
-                      ></path>
-                    </svg>
-                    <span className="-mr-1 font-medium">Dashboard</span>
-                  </a>
-                </li>
-              </ul>
+                      <svg
+                        className="-ml-1 h-6 w-6"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M6 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8ZM6 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1Z"
+                          className="fill-current text-[#6c5a87]"
+                        ></path>
+                        <path
+                          d="M13 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V8Z"
+                          className="fill-current text-[#9a7ec9]"
+                        ></path>
+                        <path
+                          d="M13 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-1Z"
+                          className="fill-current text-[#8f72bb]"
+                        ></path>
+                      </svg>
+                      <span className="-mr-1 font-medium">Dashboard</span>
+                    </a>
+                  </li>
+                </ul>
+              )}
+
               {/* <ul className="mt-8 space-y-2 tracking-wide">
                 <li
                   onClick={() => {
@@ -452,45 +492,48 @@ const App = () => {
                   </a>
                 </li>
               </ul>
-              <ul className="mt-4 space-y-2 tracking-wide">
-                <li
-                  onClick={() => {
-                    setActiveLink("Staff");
-                    navigate("/stafflist");
-                    setMl();
-                  }}
-                >
-                  <a
-                    href="#"
-                    aria-label="Staff"
-                    className={
-                      activeLink == "Staff"
-                        ? "relative flex items-center space-x-4 rounded-xl bg-[#a997cb] px-1 py-2 text-black"
-                        : "relative flex items-center space-x-4 rounded-xl px-1 py-2 text-gray-600 hover:bg-[#e1d9f7]"
-                    }
+              {userRole === "admin" && (
+                <ul className="mt-4 space-y-2 tracking-wide">
+                  <li
+                    onClick={() => {
+                      setActiveLink("Staff");
+                      navigate("/stafflist");
+                      setMl();
+                    }}
                   >
-                    <svg
-                      className="-ml-1 h-6 w-6"
-                      viewBox="0 0 24 24"
-                      fill="none"
+                    <a
+                      href="#"
+                      aria-label="Staff"
+                      className={
+                        activeLink == "Staff"
+                          ? "relative flex items-center space-x-4 rounded-xl bg-[#a997cb] px-1 py-2 text-black"
+                          : "relative flex items-center space-x-4 rounded-xl px-1 py-2 text-gray-600 hover:bg-[#e1d9f7]"
+                      }
                     >
-                      <path
-                        d="M6 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8ZM6 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1Z"
-                        className="fill-current text-[#6c5a87]"
-                      ></path>
-                      <path
-                        d="M13 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V8Z"
-                        className="fill-current text-[#9a7ec9]"
-                      ></path>
-                      <path
-                        d="M13 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-1Z"
-                        className="fill-current text-[#8f72bb]"
-                      ></path>
-                    </svg>
-                    <span className="-mr-1 font-medium">Staff</span>
-                  </a>
-                </li>
-              </ul>
+                      <svg
+                        className="-ml-1 h-6 w-6"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M6 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8ZM6 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1Z"
+                          className="fill-current text-[#6c5a87]"
+                        ></path>
+                        <path
+                          d="M13 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V8Z"
+                          className="fill-current text-[#9a7ec9]"
+                        ></path>
+                        <path
+                          d="M13 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-1Z"
+                          className="fill-current text-[#8f72bb]"
+                        ></path>
+                      </svg>
+                      <span className="-mr-1 font-medium">Staff</span>
+                    </a>
+                  </li>
+                </ul>
+              )}
+
               {/* <ul className="mt-4 space-y-2 tracking-wide">
                 <li
                   onClick={() => {
@@ -584,7 +627,17 @@ const App = () => {
 
             <div className="px-6 pt-6 bg-white">
               <Routes>
-                <Route path="/" element={<Dashboard />} />
+                <Route
+                  path="/"
+                  element={
+                    userRole === "admin" ? (
+                      <Dashboard />
+                    ) : (
+                      <Navigate to="/entrylist" replace />
+                    )
+                  }
+                />
+
                 <Route path="/dashboard" element={<Dashboard />} />
 
                 <Route path="/LaundryBill" element={<LaundryBill />} />
@@ -621,6 +674,8 @@ const App = () => {
         <>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/LaundryBill" element={<LaundryBill />} />
+            <Route path="/LaundryBill/:id" element={<LaundryBill />} />
           </Routes>
         </>
       )}

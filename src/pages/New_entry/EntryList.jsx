@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { FaTrashAlt, FaEdit, FaWhatsapp } from "react-icons/fa";
 import { RiNewspaperLine } from "react-icons/ri";
 import QrSection from "../QrSection";
+import LoadingOverlay from "../../components/LoadingOverlay";
 
 const EntryList = () => {
   const [entries, setEntries] = useState([]);
@@ -15,8 +16,28 @@ const EntryList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [billData, setBillData] = useState(null);
+  const [customerDetails, setCustomerDetails] = useState({});
 
   const limit = 10;
+
+  const fetchCustomerDetails = async (customerId) => {
+    if (customerDetails[customerId]) return customerDetails[customerId];
+
+    try {
+      const res = await axios.get(
+        `https://dirt-off-backend-main.vercel.app/custdirt/${customerId}`
+      );
+      const customer = res.data.data;
+      const fullName = `${customer.firstName} ${customer.lastName}`;
+      setCustomerDetails((prev) => ({
+        ...prev,
+        [customerId]: fullName,
+      }));
+      return fullName;
+    } catch (err) {
+      return null;
+    }
+  };
 
   const fetchEntries = async (pageNumber = 1) => {
     setLoading(true);
@@ -58,6 +79,14 @@ const EntryList = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    entries.forEach((entry) => {
+      if (entry.customerId && !customerDetails[entry.customerId]) {
+        fetchCustomerDetails(entry.customerId);
+      }
+    });
+  }, [entries]);
 
   useEffect(() => {
     fetchEntries(page);
@@ -294,7 +323,12 @@ Thank you for choosing our service!`;
                     <td className="px-4 py-2 border text-center">
                       <p> {entry.receiptNo || "N/A"}</p>
                     </td>
-                    <td className="px-4 py-2 border">{entry.customer}</td>
+                    <td className="px-4 py-2 border">
+                      {entry.customerId
+                        ? customerDetails[entry.customerId] || entry.customer
+                        : entry.customer}
+                    </td>
+
                     <td className="px-4 py-2 border">
                       {entry.products.map((p) => p.productName).join(", ")}
                     </td>
@@ -370,37 +404,38 @@ Thank you for choosing our service!`;
         <SkeletonRow />
 
         {/* Pagination only when not searching and not loading */}
-        {!isSearching && !loading && entries.length > 0 && (
-          <div className="flex justify-center items-center mt-6 space-x-2">
+        {/* {!isSearching && !loading && entries.length > 0 && ( */}
+        <div className="flex justify-center items-center mt-6 space-x-2">
+          <LoadingOverlay isLoading={loading} message="Loading entries..." />
+          <button
+            onClick={() => handlePageChange(page - 1)}
+            disabled={page === 1}
+            className="px-3 py-1 bg-[#e7e3f5] text-[#a997cb] rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          {[...Array(totalPages)].map((_, i) => (
             <button
-              onClick={() => handlePageChange(page - 1)}
-              disabled={page === 1}
-              className="px-3 py-1 bg-[#e7e3f5] text-[#a997cb] rounded disabled:opacity-50"
+              key={i}
+              onClick={() => handlePageChange(i + 1)}
+              className={`px-3 py-1 rounded ${
+                page === i + 1
+                  ? "bg-[#a997cb] text-white"
+                  : "bg-gray-100 text-gray-600"
+              }`}
             >
-              Previous
+              {i + 1}
             </button>
-            {[...Array(totalPages)].map((_, i) => (
-              <button
-                key={i}
-                onClick={() => handlePageChange(i + 1)}
-                className={`px-3 py-1 rounded ${
-                  page === i + 1
-                    ? "bg-[#a997cb] text-white"
-                    : "bg-gray-100 text-gray-600"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button
-              onClick={() => handlePageChange(page + 1)}
-              disabled={page === totalPages}
-              className="px-3 py-1 bg-[#e7e3f5] text-[#a997cb] rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-        )}
+          ))}
+          <button
+            onClick={() => handlePageChange(page + 1)}
+            disabled={page === totalPages}
+            className="px-3 py-1 bg-[#e7e3f5] text-[#a997cb] rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+        {/* )} */}
       </>
     </div>
   );

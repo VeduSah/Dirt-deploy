@@ -9,60 +9,46 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const [btnDisable, setBtnDisable] = useState(false);
+
   const login = async (e) => {
     e.preventDefault();
-    // if (!email || !password) {
-    //   toast.error("Please Input Valid Details !", { id: "Login" });
-    //   return;
-    // }
-    // try {
-    //   setBtnDisable(true);
-    //   let data = {
-    //     email: email,
-    //     password: password,
-    //   };
-  //     axios
-  //       .post(`https://ordering-portal-backend.vercel.app/api/user/login`, data)
-  //       .then((res) => {
-  //         console.log(res);
+    if (!email || !password) {
+      toast.error("Please enter email and password!");
+      return;
+    }
 
-  //         if (res.data.success) {
-  //           if (!res.data.isActive) {
-  //             toast.error("This user is currently In-Active", { id: "wede" });
-  //             setBtnDisable(false);
-  //             return;
-  //           }
-  //           localStorage.setItem("email", res.data.email);
-  //           localStorage.setItem("role", res.data.role);
-  //           localStorage.setItem("uid", res.data._id);
-  //           localStorage.setItem("branch", JSON.stringify(res.data.branch));
-  //           localStorage.setItem("eid", res.data.eid);
-  //           localStorage.setItem("isActive", res.data.isActive);
-  //           localStorage.setItem("module", JSON.stringify(res.data.module));
-  //           localStorage.setItem("name", res.data.name);
-  //           localStorage.setItem("position", res.data.position);
-  //           localStorage.setItem("currentUser", res.data.success);
-  //           toast.success("Logged In Successfully !");
+    try {
+      setBtnDisable(true);
+      const res = await axios.post(
+        "https://dirt-off-backend-main.vercel.app/api/auth/login",
+        {
+          email,
+          password,
+        }
+      );
 
-  //           setTimeout(() => {
-  //             setCurrentUser(true);
-  //             navigate("/", { replace: true });
-  //           }, 200);
-  //           setBtnDisable(false);
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //         toast.error(error.response.data.message);
-  //         setBtnDisable(false);
-  //       });
-  //   } catch (error) {
-  //     console.log(error);
-  //     setBtnDisable(false);
-  //   }
-  localStorage.setItem('currentUser',true);
-  navigate("/");
-   };
+      if (res.data.success) {
+        console.log("API Response:", res.data); // Add this line
+        localStorage.setItem("currentUser", true);
+        localStorage.setItem("userRole", res.data.staff.role);
+
+        localStorage.setItem("userName", res.data.staff.firstName);
+        toast.success("Logged in successfully!");
+
+        // Navigate based on role
+        // Navigate based on role
+        if (res.data.staff.role === "admin") {
+          navigate("/dashboard", { replace: true });
+        } else {
+          navigate("/entrylist", { replace: true });
+        }
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Invalid credentials");
+    } finally {
+      setBtnDisable(false);
+    }
+  };
 
   useEffect(() => {
     if (currentUser) {
@@ -71,7 +57,7 @@ const Login = () => {
   }, [currentUser]);
   return (
     <>
-      <Toaster />
+      {/*  <Toaster />*/}
       <div
         style={{
           backgroundImage:
@@ -84,9 +70,9 @@ const Login = () => {
           <div className="text-center lg:text-left">
             <h1 className="text-5xl font-bold text-white">Login now!</h1>
             <p className="py-6 text-white">
-              Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-              excepturi exercitationem quasi. In deleniti eaque aut repudiandae
-              et a id nisi.
+              Welcome to DirtOff - Your trusted laundry management system.
+              Access your dashboard to manage orders, customers, and staff
+              efficiently.
             </p>
           </div>
           <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">

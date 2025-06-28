@@ -125,7 +125,7 @@ const EntryForm = () => {
       setCustomers((prev) => [...prev, addedCustomer]);
       setFormData((prev) => ({
         ...prev,
-        customer: addedCustomer.firstName,
+        customer: addedCustomer.firstName + " " + addedCustomer.lastName,
         customerId: addedCustomer._id,
         customerPhone: addedCustomer.phone || "", // Add this line
         pickupAndDelivery: {
@@ -256,7 +256,9 @@ const EntryForm = () => {
         return;
       }
 
-      const selectedCustomer = customers.find((c) => c.firstName === value);
+      const selectedCustomer = customers.find(
+        (c) => `${c.firstName} ${c.lastName}` === value
+      );
 
       setFormData((prev) => ({
         ...prev,
@@ -374,8 +376,11 @@ const EntryForm = () => {
                 ➕ Add New Customer
               </option>
               {customers.map((customer) => (
-                <option key={customer._id} value={customer.firstName}>
-                  {customer.firstName}
+                <option
+                  key={customer._id}
+                  value={`${customer.firstName} ${customer.lastName}`}
+                >
+                  {customer.firstName} {customer.lastName}
                 </option>
               ))}
             </select>

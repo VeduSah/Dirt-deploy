@@ -12,6 +12,7 @@ const StaffForm = () => {
     lastName: "",
     phone: "",
     email: "",
+    password: "",
     address: "",
   });
   const [loading, setLoading] = useState(false);
@@ -63,6 +64,14 @@ const StaffForm = () => {
     } finally {
       setLoading(false);
     }
+  };
+  const validatePassword = (password) => {
+    const hasNumber = /\d/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasUpper = /[A-Z]/.test(password);
+    const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    return hasNumber && hasLower && hasUpper && hasSymbol;
   };
 
   return (
@@ -137,6 +146,30 @@ const StaffForm = () => {
               className="mt-1 block w-full border border-gray-300 rounded px-3 py-2 text-sm"
             />
           </div>
+          <div className="sm:col-span-2">
+            <label className="block text-sm font-medium text-gray-600">
+              Password *
+            </label>
+            <input
+              name="password"
+              type="text"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className={`mt-1 block w-full border rounded px-3 py-2 text-sm ${
+                formData.password && !validatePassword(formData.password)
+                  ? "border-red-500"
+                  : "border-gray-300"
+              }`}
+              placeholder="Must include: A-Z, a-z, 0-9, symbols"
+            />
+            {formData.password && !validatePassword(formData.password) && (
+              <p className="text-red-500 text-xs mt-1">
+                Password must contain uppercase, lowercase, number, and symbol
+              </p>
+            )}
+          </div>
+
           <div className="sm:col-span-2">
             <label className="block text-sm font-medium text-gray-600">
               Address
