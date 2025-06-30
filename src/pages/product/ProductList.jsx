@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import LoadingOverlay from "../../components/LoadingOverlay";
+import Loader from "../Loader";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -31,24 +32,42 @@ const ProductList = () => {
   };
 
   const searchProducts = async () => {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) {
+      fetchProducts(1);
+      return;
+    }
+
     setLoading(true);
     setIsSearching(true);
     try {
       const res = await axios.get(
         `https://dirt-off-backend-main.vercel.app/product/search?q=${searchQuery}`
       );
-      setProducts(res.data.data || []);
+      const sortedProducts = (res.data.data || []).sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+      setProducts(sortedProducts);
+      setTotalPages(1);
+      setLoading(false);
     } catch (err) {
+      toast.error("No results found");
       setProducts([]);
-    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (!isSearching) fetchProducts(page);
-  }, [page, isSearching]);
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.trim()) {
+        searchProducts();
+      } else {
+        setIsSearching(false);
+        fetchProducts(1);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
 
   const handleDelete = async (id) => {
     const confirm = window.confirm(
@@ -156,8 +175,8 @@ const ProductList = () => {
             <tbody className="bg-white">
               {loading ? (
                 <tr>
-                  <td colSpan="5" className="text-center py-8 text-gray-500">
-                    Loading...
+                  <td colSpan="5" className="text-center py-8">
+                    <Loader />
                   </td>
                 </tr>
               ) : products.length === 0 ? (

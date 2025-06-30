@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import LoadingOverlay from "../../components/LoadingOverlay";
+import Loader from "../Loader";
 
 const StaffList = () => {
   const [staff, setStaff] = useState([]);
@@ -35,7 +36,7 @@ const StaffList = () => {
 
   const searchStaff = async () => {
     if (!searchQuery.trim()) {
-      fetchStaff(1); // Reset list
+      fetchStaff(1);
       return;
     }
 
@@ -45,21 +46,31 @@ const StaffList = () => {
       const res = await axios.get(
         `https://dirt-off-backend-main.vercel.app/staff/search?q=${searchQuery}`
       );
-      setStaff(res.data.data || []);
-      setTotalPages(1); // Disable pagination while searching
+      const sortedStaff = (res.data.data || []).sort((a, b) =>
+        a.firstName.localeCompare(b.firstName)
+      );
+      setStaff(sortedStaff);
+      setTotalPages(1);
+      setLoading(false);
     } catch (err) {
+      toast.error("No results found");
       setStaff([]);
-      toast.error("No staff found");
-    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (!isSearching) {
-      fetchStaff(page);
-    }
-  }, [page, isSearching]);
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.trim()) {
+        searchStaff();
+      } else {
+        setIsSearching(false);
+        fetchStaff(1);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
 
   const handleDelete = async (id) => {
     const confirm = window.confirm(
@@ -159,7 +170,6 @@ const StaffList = () => {
                 <th className="text-left px-4 py-2 border">Last Name</th>
                 <th className="text-left px-4 py-2 border">Phone</th>
                 <th className="text-left px-4 py-2 border">Email</th>
-                <th className="text-left px-4 py-2 border">Password</th>
                 <th className="text-left px-4 py-2 border">Address</th>
                 <th className="text-center px-4 py-2 border">Actions</th>
               </tr>
@@ -167,13 +177,13 @@ const StaffList = () => {
             <tbody className="bg-white">
               {loading ? (
                 <tr>
-                  <td colSpan="8" className="text-center py-8 text-gray-500">
-                    Loading...
+                  <td colSpan="7" className="text-center py-8">
+                    <Loader />
                   </td>
                 </tr>
               ) : staff.length === 0 ? (
                 <tr>
-                  <td colSpan="8" className="text-center py-8 text-gray-500">
+                  <td colSpan="7" className="text-center py-8 text-gray-500">
                     {isSearching
                       ? `No staff found matching "${searchQuery}".`
                       : "No staff found."}
@@ -189,7 +199,6 @@ const StaffList = () => {
                     <td className="px-4 py-2 border">{cust.lastName}</td>
                     <td className="px-4 py-2 border">{cust.phone}</td>
                     <td className="px-4 py-2 border">{cust.email}</td>
-                    <td className="px-4 py-2 border">{cust.password}</td>
                     <td className="px-4 py-2 border">{cust.address}</td>
                     <td className="px-4 py-2 border text-center">
                       <Link

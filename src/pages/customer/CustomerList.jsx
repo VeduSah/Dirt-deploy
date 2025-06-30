@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import LoadingOverlay from "../../components/LoadingOverlay";
+import Loader from "../Loader";
 
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
@@ -217,8 +217,8 @@ const CustomerList = () => {
           <tbody className="bg-white">
             {loading ? (
               <tr>
-                <td colSpan="8" className="text-center py-8 text-gray-500">
-                  Loading...
+                <td colSpan="8" className="text-center py-8">
+                  <Loader />
                 </td>
               </tr>
             ) : customers.length === 0 ? (

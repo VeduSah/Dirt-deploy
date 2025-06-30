@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { FaTrashAlt, FaEdit, FaWhatsapp } from "react-icons/fa";
 import { RiNewspaperLine } from "react-icons/ri";
 import QrSection from "../QrSection";
+import Loader from "../Loader";
 // import LoadingOverlay from "../../components/LoadingOverlay";
 
 const EntryList = () => {
@@ -309,8 +310,8 @@ Thank you for choosing our service!`;
             <tbody className="bg-white">
               {loading ? (
                 <tr>
-                  <td colSpan="8" className="text-center py-8 text-gray-500">
-                    Loading...
+                  <td colSpan="8" className="text-center py-8">
+                    <Loader />
                   </td>
                 </tr>
               ) : entries.length === 0 ? (
