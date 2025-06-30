@@ -5,6 +5,7 @@ import axios from "axios";
 import logo from "/src/assets/pcs.png";
 import { useReactToPrint } from "react-to-print";
 import { QRCodeSVG } from "qrcode.react";
+import Loader from "/src/pages/Loader";
 
 const QrSection = () => {
   const { id } = useParams(); // Get the entry ID from URL
@@ -71,7 +72,12 @@ const QrSection = () => {
 
   const today = new Date().toLocaleDateString();
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center py-8">
+        <Loader />
+      </div>
+    );
   if (!entry) return <div>Entry not found</div>;
 
   // Create an array of tags based on product quantities

@@ -72,6 +72,12 @@ const StaffList = () => {
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 
+  useEffect(() => {
+    if (!isSearching) {
+      fetchStaff(page);
+    }
+  }, [page, isSearching]);
+
   const handleDelete = async (id) => {
     const confirm = window.confirm(
       "Are you sure you want to delete this staff member?"
@@ -163,6 +169,14 @@ const StaffList = () => {
       <>
         <div className="overflow-x-auto">
           <table className="min-w-full border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+            {loading && (
+              <div className="md:hidden flex justify-center items-center px-20 ml-10 py-16 rounded-lg  mb-4">
+                <div className="text-center">
+                  <Loader />
+                  {/* <p className="text-gray-500 mt-2">Loading customers...</p> */}
+                </div>
+              </div>
+            )}
             <thead className="bg-[#e6e1f1] text-[#a997cb]">
               <tr>
                 <th className="text-center px-4 py-2 border">S No.</th>
@@ -177,8 +191,10 @@ const StaffList = () => {
             <tbody className="bg-white">
               {loading ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-8">
-                    <Loader />
+                  <td colSpan="7" className="py-8">
+                    <div className="flex justify-center items-center w-full min-h-[100px]">
+                      <Loader />
+                    </div>
                   </td>
                 </tr>
               ) : staff.length === 0 ? (
@@ -220,13 +236,10 @@ const StaffList = () => {
             </tbody>
           </table>
         </div>
-
         {/* Pagination */}
-
         {/* Pagination */}
         {/* {!isSearching && !loading && staff.length > 0 && ( */}
         <div className="flex justify-center items-center mt-6 space-x-2">
-          {/* <LoadingOverlay isLoading={loading} message="Loading staffs..." /> */}
           <button
             onClick={() => handlePageChange(page - 1)}
             disabled={page === 1}
@@ -234,19 +247,31 @@ const StaffList = () => {
           >
             Previous
           </button>
-          {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i}
-              onClick={() => handlePageChange(i + 1)}
-              className={`px-3 py-1 rounded ${
-                page === i + 1
-                  ? "bg-[#a997cb] text-white"
-                  : "bg-gray-100 text-gray-600"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
+
+          {(() => {
+            const maxVisible = 5;
+            const startPage = Math.max(1, page - Math.floor(maxVisible / 2));
+            const endPage = Math.min(totalPages, startPage + maxVisible - 1);
+            const adjustedStartPage = Math.max(1, endPage - maxVisible + 1);
+
+            return Array.from(
+              { length: endPage - adjustedStartPage + 1 },
+              (_, i) => adjustedStartPage + i
+            ).map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => handlePageChange(pageNum)}
+                className={`px-3 py-1 rounded ${
+                  page === pageNum
+                    ? "bg-[#a997cb] text-white"
+                    : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                {pageNum}
+              </button>
+            ));
+          })()}
+
           <button
             onClick={() => handlePageChange(page + 1)}
             disabled={page === totalPages}
@@ -255,7 +280,7 @@ const StaffList = () => {
             Next
           </button>
         </div>
-        {/* )} */}
+        ;{/* )} */}
       </>
     </div>
   );

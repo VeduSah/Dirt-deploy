@@ -55,7 +55,6 @@ const ProductList = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (searchQuery.trim()) {
@@ -68,6 +67,15 @@ const ProductList = () => {
 
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (!isSearching) {
+      fetchProducts(page);
+    }
+  }, [page, isSearching]);
+
+  //   return () => clearTimeout(timeoutId);
+  // }, [searchQuery]);
 
   const handleDelete = async (id) => {
     const confirm = window.confirm(
@@ -163,6 +171,14 @@ const ProductList = () => {
       <>
         <div className="overflow-x-auto">
           <table className="min-w-full border border-[#e7e3f5] shadow-sm rounded-lg overflow-hidden">
+            {loading && (
+              <div className="md:hidden flex justify-center items-center px-20 ml-10 py-16 rounded-lg  mb-4">
+                <div className="text-center">
+                  <Loader />
+                  {/* <p className="text-gray-500 mt-2">Loading customers...</p> */}
+                </div>
+              </div>
+            )}
             <thead className="bg-[#e7e3f5] text-[#a997cb]">
               <tr>
                 <th className="px-4 py-2 border text-center">S No.</th>
@@ -174,9 +190,11 @@ const ProductList = () => {
             </thead>
             <tbody className="bg-white">
               {loading ? (
-                <tr>
-                  <td colSpan="5" className="text-center py-8">
-                    <Loader />
+                <tr className="hidden md:table-row">
+                  <td colSpan="5" className="py-8">
+                    <div className="flex justify-center items-center w-full min-h-[100px]">
+                      <Loader />
+                    </div>
                   </td>
                 </tr>
               ) : products.length === 0 ? (
@@ -228,11 +246,9 @@ const ProductList = () => {
             </tbody>
           </table>
         </div>
-
         {/* Pagination */}
         {/* {!isSearching && !loading && products.length > 0 && ( */}
         <div className="flex justify-center items-center mt-6 space-x-2">
-          {/* <LoadingOverlay isLoading={loading} message="Loading products..." /> */}
           <button
             onClick={() => handlePageChange(page - 1)}
             disabled={page === 1}
@@ -240,19 +256,31 @@ const ProductList = () => {
           >
             Previous
           </button>
-          {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i}
-              onClick={() => handlePageChange(i + 1)}
-              className={`px-3 py-1 rounded ${
-                page === i + 1
-                  ? "bg-[#a997cb] text-white"
-                  : "bg-gray-100 text-gray-600"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
+
+          {(() => {
+            const maxVisible = 5;
+            const startPage = Math.max(1, page - Math.floor(maxVisible / 2));
+            const endPage = Math.min(totalPages, startPage + maxVisible - 1);
+            const adjustedStartPage = Math.max(1, endPage - maxVisible + 1);
+
+            return Array.from(
+              { length: endPage - adjustedStartPage + 1 },
+              (_, i) => adjustedStartPage + i
+            ).map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => handlePageChange(pageNum)}
+                className={`px-3 py-1 rounded ${
+                  page === pageNum
+                    ? "bg-[#a997cb] text-white"
+                    : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                {pageNum}
+              </button>
+            ));
+          })()}
+
           <button
             onClick={() => handlePageChange(page + 1)}
             disabled={page === totalPages}
@@ -261,7 +289,7 @@ const ProductList = () => {
             Next
           </button>
         </div>
-        {/* )} */}
+        ;{/* )} */}
       </>
     </div>
   );

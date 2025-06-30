@@ -3,6 +3,7 @@ import { useReactToPrint } from "react-to-print";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
+import Loader from "/src/pages/Loader";
 
 const LaundryBill = () => {
   const { id } = useParams();
@@ -72,7 +73,9 @@ const LaundryBill = () => {
 
   if (loading)
     return (
-      <p className="text-center mt-10 text-gray-600">Loading bill data...</p>
+      <div className="flex justify-center items-center py-8">
+        <Loader />
+      </div>
     );
   if (!billData)
     return (
@@ -103,7 +106,7 @@ const LaundryBill = () => {
   const terms = "No refund after payment.";
 
   return (
-    <div className="p-6">
+    <div className="p-2 md:p-6">
       <div className="flex justify-end mb-4">
         <button
           onClick={handlePrint}
@@ -137,7 +140,7 @@ const LaundryBill = () => {
 
         <hr className="border-2 border-gray-300 mb-6" />
 
-        <div className="flex justify-between text-sm mb-6">
+        <div className="flex flex-col md:flex-row md:justify-between text-sm mb-6 space-y-4 md:space-y-0">
           <div>
             <p>
               <span className="font-semibold">Party Details:</span>
@@ -159,12 +162,11 @@ const LaundryBill = () => {
               {customerInfo?.email || "N/A"}
             </p>
           </div>
-          <div className="text-right">
+          <div className="md:text-right">
             <p>
               <span className="font-semibold">Receipt No.:</span>{" "}
               {billData.receiptNo}
             </p>
-            {/* Use receiptNo from bill data */}
             <p>
               <span className="font-semibold">Date of Collecting:</span>{" "}
               {dateOfCollecting}
@@ -185,28 +187,30 @@ const LaundryBill = () => {
           {"Laundry / Dry Cleaning"}
         </h2>
 
-        <table className="w-full table-auto border border-collapse mb-6 text-sm">
-          <thead>
-            <tr className="bg-gray-100 border-b">
-              <th className="border px-3 py-2 text-left">Sl. No.</th>
-              <th className="border px-3 py-2 text-left">Description</th>
-              <th className="border px-3 py-2 text-left">Quantity</th>
-              <th className="border px-3 py-2 text-left">Price/Unit</th>
-              <th className="border px-3 py-2 text-left">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((item, i) => (
-              <tr key={i}>
-                <td className="border px-3 py-1">{i + 1}</td>
-                <td className="border px-3 py-1">{item.productName}</td>
-                <td className="border px-3 py-1">{item.quantity}</td>
-                <td className="border px-3 py-1">₹{item.unitPrice}</td>
-                <td className="border px-3 py-1">₹{item.amount}</td>
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full table-auto border border-collapse text-sm min-w-[500px]">
+            <thead>
+              <tr className="bg-gray-100 border-b">
+                <th className="border px-2 py-2 text-left">Sl. No.</th>
+                <th className="border px-2 py-2 text-left">Description</th>
+                <th className="border px-2 py-2 text-left">Qty</th>
+                <th className="border px-2 py-2 text-left">Price/Unit</th>
+                <th className="border px-2 py-2 text-left">Total</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {products.map((item, i) => (
+                <tr key={i}>
+                  <td className="border px-2 py-1">{i + 1}</td>
+                  <td className="border px-2 py-1">{item.productName}</td>
+                  <td className="border px-2 py-1">{item.quantity}</td>
+                  <td className="border px-2 py-1">₹{item.unitPrice}</td>
+                  <td className="border px-2 py-1">₹{item.amount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <div className="text-sm space-y-1 mb-6 flex justify-between">
           <div>

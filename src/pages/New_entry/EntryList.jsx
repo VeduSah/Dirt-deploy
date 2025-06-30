@@ -278,6 +278,14 @@ Thank you for choosing our service!`;
       <>
         <div className="overflow-x-auto">
           <table className="min-w-full border border-[#e7e3f5] shadow-sm rounded-lg overflow-hidden">
+            {loading && (
+              <div className="md:hidden flex justify-center items-center px-20  ml-10 py-16 rounded-lg shadow-sm mb-4">
+                <div className="text-center">
+                  <Loader />
+                  {/* <p className="text-gray-500 mt-2">Loading customers...</p> */}
+                </div>
+              </div>
+            )}
             <thead className="bg-[#e7e3f5] text-[#a997cb]">
               <tr>
                 <th className="text-left px-4 py-2 whitespace-nowrap">
@@ -310,8 +318,10 @@ Thank you for choosing our service!`;
             <tbody className="bg-white">
               {loading ? (
                 <tr>
-                  <td colSpan="8" className="text-center py-8">
-                    <Loader />
+                  <td colSpan="8" className="py-8">
+                    <div className="flex justify-center items-center w-full min-h-[100px]">
+                      <Loader />
+                    </div>
                   </td>
                 </tr>
               ) : entries.length === 0 ? (
@@ -405,11 +415,9 @@ Thank you for choosing our service!`;
           </table>
         </div>
         {/* <SkeletonRow /> */}
-
         {/* Pagination only when not searching and not loading */}
         {/* {!isSearching && !loading && entries.length > 0 && ( */}
         <div className="flex justify-center items-center mt-6 space-x-2">
-          {/* <LoadingOverlay isLoading={loading} message="Loading entries..." /> */}
           <button
             onClick={() => handlePageChange(page - 1)}
             disabled={page === 1}
@@ -417,19 +425,31 @@ Thank you for choosing our service!`;
           >
             Previous
           </button>
-          {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i}
-              onClick={() => handlePageChange(i + 1)}
-              className={`px-3 py-1 rounded ${
-                page === i + 1
-                  ? "bg-[#a997cb] text-white"
-                  : "bg-gray-100 text-gray-600"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
+
+          {(() => {
+            const maxVisible = 5;
+            const startPage = Math.max(1, page - Math.floor(maxVisible / 2));
+            const endPage = Math.min(totalPages, startPage + maxVisible - 1);
+            const adjustedStartPage = Math.max(1, endPage - maxVisible + 1);
+
+            return Array.from(
+              { length: endPage - adjustedStartPage + 1 },
+              (_, i) => adjustedStartPage + i
+            ).map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => handlePageChange(pageNum)}
+                className={`px-3 py-1 rounded ${
+                  page === pageNum
+                    ? "bg-[#a997cb] text-white"
+                    : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                {pageNum}
+              </button>
+            ));
+          })()}
+
           <button
             onClick={() => handlePageChange(page + 1)}
             disabled={page === totalPages}
@@ -438,7 +458,7 @@ Thank you for choosing our service!`;
             Next
           </button>
         </div>
-        {/* )} */}
+        ;{/* )} */}
       </>
     </div>
   );
