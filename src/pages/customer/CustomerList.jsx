@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import Loader from "../Loader";
+import CSV from "../../pages/CSV";
 
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
@@ -154,11 +155,15 @@ const CustomerList = () => {
 
   return (
     <div className="max-w-[100%] mx-auto px-4 py-4 bg-gradient-to-br from-purple-100 via-white to-purple-50">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
         <h2 className="text-2xl font-bold text-theme-purple">
           Customer Directory
         </h2>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+          <CSV type="customers" />
+        </div>
       </div>
+
       {/* Search Input */}
       <div className="flex items-center mb-6 space-x-2">
         <input
@@ -315,7 +320,7 @@ const CustomerList = () => {
           Next
         </button>
       </div>
-      ;{/* )} */}
+      {/* )} */}
     </div>
   );
 };

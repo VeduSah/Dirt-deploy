@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import Loader from "../Loader";
+import CSV from "../../pages/CSV";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -127,16 +128,19 @@ const ProductList = () => {
 
   return (
     <div className="max-w-[100%] mx-auto px-4 py-4 bg-gradient-to-br from-purple-100 via-white to-purple-50">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
         <h2 className="text-2xl font-bold text-[#a997cb]">
           Products Directory
         </h2>
-        <Link
-          to="/productform"
-          className="bg-[#a997cb] text-white px-4 py-2 rounded hover:bg-[#8a82b5] transition"
-        >
-          + Add Product
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+          <Link
+            to="/productform"
+            className="bg-[#a997cb] text-white px-4 py-3 rounded hover:bg-[#8a82b5] transition text-center w-full sm:w-auto"
+          >
+            + Add Product
+          </Link>
+          <CSV type="products" />
+        </div>
       </div>
 
       {/* Search Bar */}
@@ -289,7 +293,7 @@ const ProductList = () => {
             Next
           </button>
         </div>
-        ;{/* )} */}
+        {/* )} */}
       </>
     </div>
   );

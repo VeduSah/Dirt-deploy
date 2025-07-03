@@ -137,7 +137,7 @@ const ProductForm = () => {
       </div>
       <form
         onSubmit={handleSubmit}
-        className="max-w-2xl mx-auto bg-white shadow p-6 rounded-lg space-y-4"
+        className="max-w-2xl mx-auto bg-gradient-to-br from-purple-100 via-white to-purple-50 shadow p-6 rounded-lg space-y-4"
       >
         <h2 className="text-xl font-semibold text-[#a997cb] mb-4">
           {id ? "Edit Product" : "Add Product"}

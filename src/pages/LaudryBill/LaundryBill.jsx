@@ -2,8 +2,8 @@ import React, { useRef, useEffect, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
 import Loader from "/src/pages/Loader";
+import { useParams, useNavigate } from "react-router-dom";
 
 const LaundryBill = () => {
   const { id } = useParams();
@@ -11,6 +11,7 @@ const LaundryBill = () => {
   const [loading, setLoading] = useState(true);
   const [billData, setBillData] = useState(null);
   const [customerInfo, setCustomerInfo] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBillData = async () => {
@@ -107,12 +108,19 @@ const LaundryBill = () => {
 
   return (
     <div className="p-2 md:p-6">
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-between items-center mb-4">
         <button
           onClick={handlePrint}
           className="bg-[#a997cb] text-white px-5 py-2 rounded hover:bg-[#8a82b5] transition disabled:opacity-50"
         >
           Print Invoice
+        </button>
+
+        <button
+          onClick={() => navigate("/entrylist")}
+          className="bg-[#a997cb] text-white px-5 py-2 rounded hover:bg-[#8a82b5] transition"
+        >
+          ← Back
         </button>
       </div>
 
@@ -191,7 +199,7 @@ const LaundryBill = () => {
           <table className="w-full table-auto border border-collapse text-sm min-w-[500px]">
             <thead>
               <tr className="bg-gray-100 border-b">
-                <th className="border px-2 py-2 text-left">Sl. No.</th>
+                <th className="border px-2 py-2 text-left">S.No.</th>
                 <th className="border px-2 py-2 text-left">Description</th>
                 <th className="border px-2 py-2 text-left">Qty</th>
                 <th className="border px-2 py-2 text-left">Price/Unit</th>

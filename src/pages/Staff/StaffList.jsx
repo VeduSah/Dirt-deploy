@@ -6,6 +6,7 @@ import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import Loader from "../Loader";
+import CSV from "../../pages/CSV";
 
 const StaffList = () => {
   const [staff, setStaff] = useState([]);
@@ -126,14 +127,17 @@ const StaffList = () => {
 
   return (
     <div className="max-w-[100%] mx-auto px-4 py-4 bg-gradient-to-br from-purple-100 via-white to-purple-50">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
         <h2 className="text-2xl font-bold text-[#a997cb]">Staff Directory</h2>
-        <Link
-          to="/staffform"
-          className="bg-[#a997cb] text-white px-4 py-2 rounded hover:bg-[#8a82b5] transition"
-        >
-          + Add Staff
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+          <Link
+            to="/staffform"
+            className="bg-[#a997cb] text-white px-4 py-3 rounded hover:bg-[#8a82b5] transition text-center w-full sm:w-auto"
+          >
+            + Add Staff
+          </Link>
+          <CSV type="staff" />
+        </div>
       </div>
 
       {/* Search Bar */}
@@ -184,6 +188,7 @@ const StaffList = () => {
                 <th className="text-left px-4 py-2 border">Last Name</th>
                 <th className="text-left px-4 py-2 border">Phone</th>
                 <th className="text-left px-4 py-2 border">Email</th>
+                <th className="text-left px-4 py-2 border">Password</th>
                 <th className="text-left px-4 py-2 border">Address</th>
                 <th className="text-center px-4 py-2 border">Actions</th>
               </tr>
@@ -191,8 +196,8 @@ const StaffList = () => {
             <tbody className="bg-white">
               {loading ? (
                 <tr>
-                  <td colSpan="7" className="py-8">
-                    <div className="flex justify-center items-center w-full min-h-[100px]">
+                  <td colSpan="8" className="py-8">
+                    <div className="flex justify-center items-center w-full min-h-[100px] text-center">
                       <Loader />
                     </div>
                   </td>
@@ -215,6 +220,36 @@ const StaffList = () => {
                     <td className="px-4 py-2 border">{cust.lastName}</td>
                     <td className="px-4 py-2 border">{cust.phone}</td>
                     <td className="px-4 py-2 border">{cust.email}</td>
+                    <td className="px-4 py-2 border">
+                      <div className="flex items-center justify-center gap-2">
+                        {showPasswords[cust._id] ? (
+                          <span
+                            onClick={() =>
+                              setShowPasswords((prev) => ({
+                                ...prev,
+                                [cust._id]: false,
+                              }))
+                            }
+                            className="cursor-pointer"
+                          >
+                            {cust.password}
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() =>
+                              setShowPasswords((prev) => ({
+                                ...prev,
+                                [cust._id]: true,
+                              }))
+                            }
+                            className="text-gray-500 hover:text-gray-700"
+                          >
+                            <FaEye />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+
                     <td className="px-4 py-2 border">{cust.address}</td>
                     <td className="px-4 py-2 border text-center">
                       <Link
@@ -280,7 +315,7 @@ const StaffList = () => {
             Next
           </button>
         </div>
-        ;{/* )} */}
+        {/* )} */}
       </>
     </div>
   );
