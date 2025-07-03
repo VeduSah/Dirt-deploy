@@ -32,7 +32,7 @@ import EntryForm from "./pages/New_entry/EntryForm";
 import EntryList from "./pages/New_entry/EntryList";
 import QrSection from "./pages/QrSection";
 import Dashboard from "./pages/dashboard/Dashboard";
-
+import CSV from "./pages/CSV";
 const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -161,7 +161,7 @@ const App = () => {
                     </button>
                   </div>
                 )}
-                <h2 className="font-semibold text-xl mt-3">DirtOff</h2>
+                {/* <h2 className="font-semibold text-xl mt-3">DirtOff</h2> */}
               </div>
 
               <div className="mt-8 text-center">

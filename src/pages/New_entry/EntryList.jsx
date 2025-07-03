@@ -6,6 +6,8 @@ import { FaTrashAlt, FaEdit, FaWhatsapp } from "react-icons/fa";
 import { RiNewspaperLine } from "react-icons/ri";
 import QrSection from "../QrSection";
 import Loader from "../Loader";
+import { BsQrCode } from "react-icons/bs";
+import CSV from "../../pages/CSV";
 // import LoadingOverlay from "../../components/LoadingOverlay";
 
 const EntryList = () => {
@@ -183,16 +185,22 @@ const EntryList = () => {
         ).toLocaleDateString()
       : "TBD";
 
-    const message = `Hi ${entry.customer},
+    const message = ` *DirtOff Laundry Services*
 
-Your laundry order details:
-Receipt No: ${entry.receiptNo || "N/A"}
-Products: ${entry.products.map((p) => p.productName).join(", ")}
-Total Amount: ₹${entry.charges?.totalAmount?.toFixed(2)}
-Status: ${entry.status || "pending"}
-Expected Delivery: ${expectedDelivery}
+Hello *${entry.customer}* 
 
-Thank you for choosing our service!`;
+ *Order Details:*
+ Receipt No: *${entry.receiptNo || "N/A"}*
+ Products: *${entry.products.map((p) => p.productName).join(", ")}*
+ Total Amount: *₹${entry.charges?.totalAmount?.toFixed(2)}*
+ Status: *${entry.status || "pending"}*
+Expected Delivery: *${expectedDelivery}*
+
+ *Thank you for choosing DirtOff!*
+We truly appreciate your trust in our service! 
+
+ For any queries or support, feel free to reach out to us anytime!
+ *DirtOff – Because your clothes deserve the best!* `;
 
     const phoneNumber = String(entry.customerPhone).replace(/[^\d]/g, "");
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
@@ -237,14 +245,19 @@ Thank you for choosing our service!`;
 
   return (
     <div className="max-w-[100%] mx-auto px-4 py-4 bg-gradient-to-br from-purple-100 via-white to-purple-50">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-[#a997cb]">New Entries</h2>
-        <Link
-          to="/entryform"
-          className="bg-[#a997cb] text-white px-4 py-2 rounded hover:bg-[#8a82b5] transition"
-        >
-          + Add Entry
-        </Link>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+        <h2 className="text-2xl font-bold text-[#a997cb]">
+          New Entries Directory
+        </h2>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+          <Link
+            to="/entryform"
+            className="bg-[#a997cb] text-white px-4 py-3 rounded hover:bg-[#8a82b5] transition text-center w-full sm:w-auto"
+          >
+            + Add Entry
+          </Link>
+          <CSV type="entries" />
+        </div>
       </div>
 
       {/* Search box */}
@@ -307,7 +320,7 @@ Thank you for choosing our service!`;
                 <th className="text-left px-4 py-2 whitespace-nowrap">
                   Delivery
                 </th>
-                <th className="text-left px-4 py-2 whitespace-nowrap">
+                <th className="text-center px-4 py-2 whitespace-nowrap">
                   Status
                 </th>
 
@@ -336,15 +349,24 @@ Thank you for choosing our service!`;
                     <td className="px-4 py-2 border text-center">
                       <p> {entry.receiptNo || "N/A"}</p>
                     </td>
-                    <td className="px-4 py-2 border">
+                    <td className="px-4 py-2 border w-48">
                       {entry.customerId
                         ? customerDetails[entry.customerId] || entry.customer
                         : entry.customer}
                     </td>
 
                     <td className="px-4 py-2 border">
-                      {entry.products.map((p) => p.productName).join(", ")}
+                      <textarea
+                        value={entry.products
+                          .map((p) => p.productName)
+                          .join(", ")}
+                        readOnly
+                        className="w-full  border-none bg-transparent text-xs text-gray-700"
+                        rows="3"
+                        cols="20"
+                      />
                     </td>
+
                     <td className="px-4 py-2 border">
                       ₹ {entry.charges?.totalAmount?.toFixed(2)}
                     </td>
@@ -366,7 +388,7 @@ Thank you for choosing our service!`;
                         onChange={(e) =>
                           handleStatusChange(entry._id, e.target.value)
                         }
-                        className="border px-2 py-1 rounded text-xs w-full"
+                        className="border px-2 py-1 rounded text-xs w-24 text-center"
                       >
                         <option value="pending">Pending</option>
                         <option value="delivered">Delivered</option>
@@ -389,9 +411,9 @@ Thank you for choosing our service!`;
                         </button>
                         <Link
                           to={`/LaundryBill/${entry._id}`}
-                          className="text-sm pl-3 text-[#a997cb] hover:text-[#8a82b5] hover:underline mr-4"
+                          className="text-sm pl-3 text-[#7f59c5] hover:text-[#8a82b5] hover:underline mr-4"
                         >
-                          View
+                          <RiNewspaperLine />
                         </Link>
                         <button
                           onClick={() => handleWhatsAppShare(entry)}
@@ -404,7 +426,7 @@ Thank you for choosing our service!`;
                           to={`/qr-tags/${entry._id}`}
                           className="text-sm text-[#7f59c5] hover:text-[#8a82b5] inline-flex hover:underline mr-4"
                         >
-                          <RiNewspaperLine />
+                          <BsQrCode />
                         </Link>
                       </div>
                     </td>
@@ -415,6 +437,7 @@ Thank you for choosing our service!`;
           </table>
         </div>
         {/* <SkeletonRow /> */}
+
         {/* Pagination only when not searching and not loading */}
         {/* {!isSearching && !loading && entries.length > 0 && ( */}
         <div className="flex justify-center items-center mt-6 space-x-2">
@@ -458,7 +481,7 @@ Thank you for choosing our service!`;
             Next
           </button>
         </div>
-        ;{/* )} */}
+        {/* )} */}
       </>
     </div>
   );

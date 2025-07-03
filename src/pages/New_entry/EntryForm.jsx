@@ -353,10 +353,10 @@ const EntryForm = () => {
       </div>
       <form
         onSubmit={handleSubmit}
-        className="max-w-4xl mx-auto bg-white shadow p-6 rounded-lg space-y-6"
+        className="max-w-4xl mx-auto bg-gradient-to-br from-purple-100 via-white to-purple-50 shadow p-6 rounded-lg space-y-6"
       >
         <h2 className="text-2xl font-semibold text-gray-700">
-          {id ? "Edit Entry" : "New Entry"}
+          {id ? "Edit Entry Form" : "New Entry Form"}
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-col gap-4">
