@@ -1,6 +1,6 @@
 // In QrSection.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo from "/src/assets/pcs.png";
 import { useReactToPrint } from "react-to-print";
@@ -15,6 +15,7 @@ const QrSection = () => {
   const invoiceUrl = entry
     ? `${window.location.origin}/LaundryBill/${entry._id}`
     : "";
+  const navigate = useNavigate();
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
@@ -94,12 +95,19 @@ const QrSection = () => {
 
   return (
     <div>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-between items-center mb-4">
         <button
           onClick={handlePrint}
           className="bg-[#a997cb] text-white px-5 py-2 rounded hover:bg-[#8a82b5] transition disabled:opacity-50"
         >
           Print Invoice
+        </button>
+
+        <button
+          onClick={() => navigate("/entrylist")}
+          className="bg-[#a997cb] text-white px-5 py-2 rounded hover:bg-[#8a82b5] transition"
+        >
+          ← Back
         </button>
       </div>
       <div className="container mx-auto p-4 w-[300px]" ref={printRef}>

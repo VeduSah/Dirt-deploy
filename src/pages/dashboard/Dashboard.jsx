@@ -799,20 +799,20 @@ const Dashboard = () => {
 
       default: // sales
         return (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-8 pt-20 lg:pt-6">
             <div className="flex items-center gap-2 mb-6">
               <h3 className="text-lg font-semibold text-gray-800">
                 Sales Analytics
               </h3>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Weekly Sales Graph */}
               <div>
                 <h4 className="text-md font-semibold text-gray-700 mb-4">
                   Weekly Sales
                 </h4>
-                <div className="h-64 bg-purple-50 rounded-lg p-4 relative">
+                <div className="h-64 bg-purple-50 rounded-lg p-4">
                   <svg className="w-full h-full" viewBox="0 0 300 200">
                     {/* Grid lines */}
                     {[0, 1, 2, 3, 4].map((i) => (
@@ -926,7 +926,7 @@ const Dashboard = () => {
                 <h4 className="text-md font-semibold text-gray-700 mb-4">
                   Monthly Sales 2025
                 </h4>
-                <div className="h-64 bg-purple-50 rounded-lg p-4 relative">
+                <div className="h-64 bg-purple-50 rounded-lg p-4">
                   <svg className="w-full h-full" viewBox="0 0 300 200">
                     {/* Grid lines */}
                     {[0, 1, 2, 3, 4].map((i) => (
@@ -1126,9 +1126,11 @@ const Dashboard = () => {
       <div className="p-6 bg-gradient-to-br from-purple-100 via-white to-purple-50 min-h-screen">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
-            <FaTshirt className="text-[#a997cb]" />
-            Laundry Dashboard
+          <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2 sm:gap-3">
+            <FaTshirt className="text-[#a997cb] flex-shrink-0" />
+            <span className="whitespace-nowrap sm:whitespace-normal">
+              Laundry Dashboard
+            </span>
           </h1>
           <p className="text-gray-600 mt-2">
             Welcome back! Here's what's happening with your laundry business
