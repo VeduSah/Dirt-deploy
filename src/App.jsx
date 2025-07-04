@@ -118,6 +118,7 @@ const App = () => {
   return (
     <>
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+
       {currentUser ? (
         <section className="bg-gray-100 dark:bg-gray-900">
           <aside
@@ -127,6 +128,12 @@ const App = () => {
                 : "fixed top-0 z-10 ml-[-100%] flex h-screen w-full flex-col justify-between border-r bg-white px-6 pb-3 transition duration-300 md:w-4/12 lg:ml-0 lg:w-[25%] xl:w-[20%] 2xl:w-[15%] dark:bg-gray-800 dark:border-gray-700"
             }
           >
+            {/* <div className="p-4">
+              <p className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full capitalize font-medium">
+                {userRole}
+              </p>
+            </div> */}
+
             <div className=" overflow-y-auto z-60 h-[90vh] overflow-x-hidden">
               <div className="-mx-6 z-60 px-6 py-4">
                 {window.innerWidth < 1023 && (
@@ -137,6 +144,7 @@ const App = () => {
                     >
                       <AiFillCloseCircle />
                     </h5>
+
                     <button
                       onClick={handleLogout}
                       className="group flex items-center space-x-4 rounded-md px-4 py-5    text-black  "
@@ -163,13 +171,15 @@ const App = () => {
                 )}
                 {/* <h2 className="font-semibold text-xl mt-3">DirtOff</h2> */}
               </div>
-
               <div className="mt-8 text-center">
                 <img
                   src={logo}
                   alt="admin"
                   className="m-auto h-20 w-[11rem] object-contain lg:h-28 lg:w-[11rem]"
                 />
+                <p className="mb-4 text-xs sm:text-sm bg-purple-100 text-purple-700 px-2 py-1 rounded-full inline-block capitalize font-medium">
+                  {userRole}
+                </p>
 
                 <h5 className="mt-4 hidden text-xl font-semibold text-gray-600 lg:block dark:text-gray-300">
                   {name}
@@ -621,7 +631,11 @@ const App = () => {
                 >
                   <AiOutlineMenu />
                 </h5>
-                <div className="flex space-x-4"></div>
+                <div className="p-4 lg:hidden">
+                  <p className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full capitalize font-medium">
+                    {userRole}
+                  </p>
+                </div>
               </div>
             </div>
 
