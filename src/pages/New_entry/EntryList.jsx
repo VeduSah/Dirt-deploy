@@ -202,12 +202,32 @@ We truly appreciate your trust in our service!
  For any queries or support, feel free to reach out to us anytime!
  *DirtOff – Because your clothes deserve the best!* `;
 
-    const phoneNumber = String(entry.customerPhone).replace(/[^\d]/g, "");
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
-      message
-    )}`;
+    // Clean phone number
+    let phoneNumber = String(entry.customerPhone).replace(/\D/g, "");
+    if (phoneNumber.length === 10) {
+      phoneNumber = "91" + phoneNumber;
+    }
 
-    window.open(whatsappUrl, "_blank");
+    // Try different WhatsApp URLs
+    const urls = [
+      `https://web.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(
+        message
+      )}`,
+      `https://api.whatsapp.com/send/?phone=${phoneNumber}&text=${encodeURIComponent(
+        message
+      )}`,
+      `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(
+        message
+      )}`,
+    ];
+
+    // Try opening the first URL, if it fails, user can manually copy
+    window.open(urls[0], "_blank");
+
+    // Also copy to clipboard as backup
+    navigator.clipboard.writeText(message).then(() => {
+      toast.success("Message copied to clipboard as backup");
+    });
   };
 
   // const SkeletonRow = () => (
