@@ -170,7 +170,7 @@ const CustomerList = () => {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder=" Search by customer or receipt no..."
+          placeholder=" Search customers by  name, phone or email"
           className="border border-gray-300 px-4 py-2 rounded w-full"
         />
         {/* <button

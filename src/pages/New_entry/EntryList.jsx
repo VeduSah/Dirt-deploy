@@ -194,7 +194,7 @@ Hello *${entry.customer}*
  Products: *${entry.products.map((p) => p.productName).join(", ")}*
  Total Amount: *₹${entry.charges?.totalAmount?.toFixed(2)}*
  Status: *${entry.status || "pending"}*
-Expected Delivery: *${expectedDelivery}*
+ Expected Delivery: *${expectedDelivery}*
 
  *Thank you for choosing DirtOff!*
 We truly appreciate your trust in our service! 
@@ -361,9 +361,9 @@ We truly appreciate your trust in our service!
                           .map((p) => p.productName)
                           .join(", ")}
                         readOnly
-                        className="w-full  border-none bg-transparent text-xs text-gray-700"
+                        className="w-full border-none bg-transparent text-xs sm:text-sm text-gray-700"
                         rows="3"
-                        cols="20"
+                        cols="40"
                       />
                     </td>
 
