@@ -456,7 +456,6 @@ We truly appreciate your trust in our service!
             </tbody>
           </table>
         </div>
-        {/* <SkeletonRow /> */}
 
         {/* Pagination only when not searching and not loading */}
         {/* {!isSearching && !loading && entries.length > 0 && ( */}
