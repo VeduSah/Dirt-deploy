@@ -51,7 +51,7 @@ const ModalCustomer = ({ isPopup = false, onSubmitSuccess, onCancel }) => {
 
     const url = id
       ? `https://dirt-off-backend-main.vercel.app/custdirt/update/${id}`
-      : `https://dirt-off-backend-main.vercel.app/custdirt/create;`;
+      : `https://dirt-off-backend-main.vercel.app/custdirt/create`;
 
     const method = id ? "put" : "post";
 
