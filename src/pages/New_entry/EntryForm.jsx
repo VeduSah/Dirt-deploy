@@ -17,6 +17,7 @@ const EntryForm = () => {
       { productName: "", quantity: 1, unitPrice: 0, amount: 0, taxPer: 0 },
     ],
     charges: { subtotal: 0, taxAmount: 0, totalAmount: 0 },
+    discount: 0,
     taxPercent: 0,
     pickupAndDelivery: {
       pickupType: "Self",
@@ -33,6 +34,8 @@ const EntryForm = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showCustomerPopup, setShowCustomerPopup] = useState(false);
+  const [discountType, setDiscountType] = useState("amount");
+  const [discountInput, setDiscountInput] = useState(0);
 
   useEffect(() => {
     const savedFormData = sessionStorage.getItem("entryFormData");
@@ -144,7 +147,11 @@ const EntryForm = () => {
     }
   };
 
-  const recalculateCharges = (products) => {
+  const recalculateCharges = (
+    products,
+    discountValue = 0,
+    discountType = "amount"
+  ) => {
     const subtotal = products.reduce((acc, p) => acc + p.amount, 0);
 
     // Calculate tax amount based on each product's tax percentage and amount
@@ -153,10 +160,18 @@ const EntryForm = () => {
       return acc + productTaxAmount;
     }, 0);
 
-    const totalAmount = subtotal + taxAmount;
+    let discount = 0;
+    if (discountType === "percent") {
+      discount = ((subtotal + taxAmount) * (discountValue || 0)) / 100;
+    } else {
+      discount = discountValue || 0;
+    }
+
+    const totalAmount = subtotal + taxAmount - discount;
     return {
       subtotal: parseFloat(subtotal.toFixed(2)),
       taxAmount: parseFloat(taxAmount.toFixed(2)),
+      discount: parseFloat(discount.toFixed(2)),
       totalAmount: parseFloat(totalAmount.toFixed(2)),
     };
   };
@@ -303,13 +318,24 @@ const EntryForm = () => {
     e.preventDefault();
     setLoading(true);
 
+    // Move discount out of charges
+    const dataToSend = {
+      ...formData,
+      discount: formData.charges.discount,
+      charges: {
+        subtotal: formData.charges.subtotal,
+        taxAmount: formData.charges.taxAmount,
+        totalAmount: formData.charges.totalAmount,
+      },
+    };
+
     const url = id
       ? `https://dirt-off-backend-main.vercel.app/entry/update/${id}`
       : "https://dirt-off-backend-main.vercel.app/entry/create";
     const method = id ? "put" : "post";
 
     try {
-      await axios[method](url, formData);
+      await axios[method](url, dataToSend);
       toast.success(id ? "Entry updated!" : "Entry added!");
       navigate("/entrylist");
     } catch (err) {
@@ -318,7 +344,6 @@ const EntryForm = () => {
       setLoading(false);
     }
   };
-
   return (
     <div>
       {showCustomerPopup && (
@@ -515,7 +540,7 @@ const EntryForm = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm text-gray-600 mb-1">Subtotal</label>
             <input
@@ -535,6 +560,52 @@ const EntryForm = () => {
                 value={formData.charges.taxAmount}
                 readOnly
                 className="w-full border px-3 py-2 rounded bg-gray-100"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">Discount</label>
+            <div className="flex gap-2">
+              <select
+                value={discountType}
+                onChange={(e) => {
+                  setDiscountType(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    charges: recalculateCharges(
+                      prev.products,
+                      discountInput,
+                      e.target.value
+                    ),
+                  }));
+                }}
+                className="border px-2 py-1 rounded"
+              >
+                <option value="amount">₹ Amount</option>
+                <option value="percent">% Percent</option>
+              </select>
+              <input
+                type="number"
+                min={0}
+                step="1"
+                value={discountInput}
+                onChange={(e) => {
+                  // Always store as integer, never decimal
+                  const value = Math.max(0, parseInt(e.target.value, 10) || 0);
+                  setDiscountInput(value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    charges: recalculateCharges(
+                      prev.products,
+                      value,
+                      discountType
+                    ),
+                  }));
+                }}
+                className="w-full border px-3 py-2 rounded"
+                placeholder={`Enter discount in ${
+                  discountType === "percent" ? "%" : "₹"
+                }`}
               />
             </div>
           </div>

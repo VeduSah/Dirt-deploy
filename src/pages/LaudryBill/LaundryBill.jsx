@@ -21,6 +21,7 @@ const LaundryBill = () => {
         );
         const entry = res.data.data;
         setBillData(entry);
+        console.log("bill data", entry);
 
         // Now fetch customer details by customerId
         if (entry.customerId) {
@@ -97,7 +98,7 @@ const LaundryBill = () => {
   const logoUrl = "/Dirt_off_1.png";
   const partyDetails = {
     address:
-      "LIG 450 A, SIDDHARTH NAGAR, Taramandal Road, Siddharth Enclave Sub Post Office,  SIDDHARTH ENCLAVE, Gorakhpur, Gorakhpur, Uttar Pradesh, 273017",
+      "Near Surmount International, Junior Wing, Taramandal, Gorakhpur, 273017",
     name: "DIRTOFF",
     phone: "7311196660",
     email: "team.dirtoff@gmail.com",
@@ -231,30 +232,24 @@ const LaundryBill = () => {
           </table>
         </div>
 
-        <div className="text-sm space-y-1 mb-6 flex justify-between">
-          <div>
-            <p>
-              <span className="font-semibold">Pickup Type:</span>{" "}
-              {pickupAndDelivery.pickupType}
-            </p>
-            <p>
-              <span className="font-semibold">Delivery Type:</span>{" "}
-              {pickupAndDelivery.deliveryType}
-            </p>
-          </div>
-          <div className="text-right">
-            <p>
-              <span className="font-semibold">Sub Total:</span> ₹
-              {charges.subtotal}
-            </p>
-            <p>
-              <span className="font-semibold">Tax Amount:</span> ₹
-              {charges.taxAmount}
-            </p>
-            <p className="text-xl font-bold">
-              Total Amount: ₹{charges.totalAmount.toFixed(2)}
-            </p>
-          </div>
+        <div className="text-right">
+          <p>
+            <span className="font-semibold">Sub Total:</span> ₹
+            {charges.subtotal}
+          </p>
+          <p>
+            <span className="font-semibold">Tax Amount:</span> ₹
+            {charges.taxAmount}
+          </p>
+          <p>
+            <span className="font-semibold">Discount:</span>{" "}
+            {billData.discountType === "percent"
+              ? `${billData.discount || 0}%`
+              : `₹${billData.discount || 0}`}
+          </p>
+          <p className="text-xl font-bold">
+            Total Amount: ₹{charges.totalAmount.toFixed(2)}
+          </p>
         </div>
 
         <div className="pt-4 text-sm flex justify-between">
