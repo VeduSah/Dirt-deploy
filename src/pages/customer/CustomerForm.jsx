@@ -148,7 +148,6 @@ const CustomerForm = ({ isPopup = false, onSubmitSuccess, onCancel }) => {
               type="email"
               value={formData.email}
               onChange={handleChange}
-              required
               className="mt-1 block w-full border border-gray-300 rounded px-3 py-2 text-sm"
             />
           </div>
