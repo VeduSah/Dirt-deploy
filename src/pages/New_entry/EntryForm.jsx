@@ -36,6 +36,8 @@ const EntryForm = () => {
   const [showCustomerPopup, setShowCustomerPopup] = useState(false);
   const [discountType, setDiscountType] = useState("amount");
   const [discountInput, setDiscountInput] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState();
+  const [discountPercent, setDiscountPercent] = useState();
 
   useEffect(() => {
     const savedFormData = sessionStorage.getItem("entryFormData");
@@ -94,6 +96,12 @@ const EntryForm = () => {
         );
         const entryData = res.data.data;
 
+        // Convert expectedDeliveryDate to YYYY-MM-DD for input[type="date"]
+        let expectedDate = entryData.pickupAndDelivery?.expectedDeliveryDate;
+        if (expectedDate) {
+          expectedDate = expectedDate.split("T")[0];
+        }
+
         // Map products to include taxPer from the tax field
         const productsWithTax = entryData.products.map((p) => ({
           ...p,
@@ -104,8 +112,21 @@ const EntryForm = () => {
         setFormData({
           ...entryData,
           products: productsWithTax,
-          // No need to recalculate charges as they're already in the response
+          pickupAndDelivery: {
+            ...entryData.pickupAndDelivery,
+            expectedDeliveryDate: expectedDate || "",
+          },
         });
+
+        setDiscountPercent(entryData.discount || 0);
+        const baseAmount =
+          (entryData.charges?.subtotal || 0) +
+          (entryData.charges?.taxAmount || 0);
+        const discountAmt =
+          baseAmount && entryData.discount
+            ? parseFloat(((baseAmount * entryData.discount) / 100).toFixed(2))
+            : "";
+        setDiscountAmount(discountAmt);
       } catch (err) {
         console.error(err);
         toast.error("Failed to load entry");
@@ -183,7 +204,7 @@ const EntryForm = () => {
     if (field === "productName") {
       const productData = products.find((p) => p.name === value);
       const defaultCharge = productData?.ServiceCharge?.[0]?.charge || 0;
-      const productTax = productData?.tax || 0; // Get the tax from the product
+      const productTax = productData?.tax || 0;
 
       selectedProduct = {
         ...selectedProduct,
@@ -192,14 +213,6 @@ const EntryForm = () => {
         amount: selectedProduct.quantity * defaultCharge,
         taxPer: productTax,
       };
-      setFormData((prev) => ({
-        ...prev,
-        taxPercent: productTax,
-        charges: recalculateCharges(
-          prev.products.map((p, i) => (i === index ? selectedProduct : p)),
-          productTax
-        ),
-      }));
     } else if (field === "unitPrice" || field === "quantity") {
       selectedProduct = {
         ...selectedProduct,
@@ -208,7 +221,6 @@ const EntryForm = () => {
       selectedProduct.amount =
         selectedProduct.quantity * selectedProduct.unitPrice;
     } else if (field === "taxPer") {
-      // Add explicit handling for tax changes
       selectedProduct = {
         ...selectedProduct,
         taxPer: parseFloat(value) || 0,
@@ -217,7 +229,25 @@ const EntryForm = () => {
 
     newProducts[index] = selectedProduct;
 
-    const charges = recalculateCharges(newProducts, formData.taxPercent);
+    // Calculate new subtotal and tax
+    const newSubtotal = newProducts.reduce((acc, p) => acc + p.amount, 0);
+    const newTaxAmount = newProducts.reduce((acc, p) => {
+      const productTaxAmount = (p.amount * (p.taxPer || 0)) / 100;
+      return acc + productTaxAmount;
+    }, 0);
+
+    // Update discount amount based on current percentage
+    const currentDiscountPercent = parseFloat(discountPercent) || 0;
+    const newBaseAmount = newSubtotal + newTaxAmount;
+    const newDiscountAmount = (newBaseAmount * currentDiscountPercent) / 100;
+
+    setDiscountAmount(parseFloat(newDiscountAmount.toFixed(2)));
+
+    const charges = recalculateCharges(
+      newProducts,
+      newDiscountAmount,
+      "amount"
+    );
 
     setFormData((prev) => ({
       ...prev,
@@ -321,7 +351,7 @@ const EntryForm = () => {
     // Move discount out of charges
     const dataToSend = {
       ...formData,
-      discount: formData.charges.discount,
+      discount: parseFloat(discountPercent) || 0,
       charges: {
         subtotal: formData.charges.subtotal,
         taxAmount: formData.charges.taxAmount,
@@ -564,51 +594,68 @@ const EntryForm = () => {
             </div>
           </div>
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Discount</label>
-            <div className="flex gap-2">
-              <select
-                value={discountType}
-                onChange={(e) => {
-                  setDiscountType(e.target.value);
-                  setFormData((prev) => ({
-                    ...prev,
-                    charges: recalculateCharges(
-                      prev.products,
-                      discountInput,
-                      e.target.value
-                    ),
-                  }));
-                }}
-                className="border px-2 py-1 rounded"
-              >
-                <option value="amount">₹ Amount</option>
-                <option value="percent">% Percent</option>
-              </select>
-              <input
-                type="number"
-                min={0}
-                step="1"
-                value={discountInput}
-                onChange={(e) => {
-                  // Always store as integer, never decimal
-                  const value = Math.max(0, parseInt(e.target.value, 10) || 0);
-                  setDiscountInput(value);
-                  setFormData((prev) => ({
-                    ...prev,
-                    charges: recalculateCharges(
-                      prev.products,
-                      value,
-                      discountType
-                    ),
-                  }));
-                }}
-                className="w-full border px-3 py-2 rounded"
-                placeholder={`Enter discount in ${
-                  discountType === "percent" ? "%" : "₹"
-                }`}
-              />
-            </div>
+            <label className="block text-sm text-gray-600 mb-1">
+              Discount Percentage (%)
+            </label>
+            <input
+              type="number"
+              min={0}
+              max={100}
+              step="0.01"
+              value={discountPercent}
+              onChange={(e) => {
+                const value = e.target.value;
+                setDiscountPercent(value);
+
+                const percent = parseFloat(value) || 0;
+                const baseAmount =
+                  formData.charges.subtotal + formData.charges.taxAmount;
+                const amount = (baseAmount * percent) / 100;
+                setDiscountAmount(
+                  amount > 0 ? parseFloat(amount.toFixed(2)) : ""
+                );
+
+                setFormData((prev) => ({
+                  ...prev,
+                  charges: recalculateCharges(prev.products, amount, "amount"),
+                }));
+              }}
+              className="w-full border px-3 py-2 rounded"
+              placeholder="Enter discount percentage"
+            />
           </div>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">
+              Discount Amount (₹)
+            </label>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              value={discountAmount}
+              onChange={(e) => {
+                const value = e.target.value;
+                setDiscountAmount(value);
+
+                const amount = parseFloat(value) || 0;
+                const baseAmount =
+                  formData.charges.subtotal + formData.charges.taxAmount;
+                const percent =
+                  baseAmount > 0 ? (amount / baseAmount) * 100 : 0;
+                setDiscountPercent(
+                  percent > 0 ? parseFloat(percent.toFixed(2)) : ""
+                );
+
+                setFormData((prev) => ({
+                  ...prev,
+                  charges: recalculateCharges(prev.products, amount, "amount"),
+                }));
+              }}
+              className="w-full border px-3 py-2 rounded"
+              placeholder="Enter discount amount"
+            />
+          </div>
+
           <div>
             <label className="block text-sm text-gray-600 mb-1">
               Total Amount
