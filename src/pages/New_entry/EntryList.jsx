@@ -20,6 +20,7 @@ const EntryList = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [billData, setBillData] = useState(null);
   const [customerDetails, setCustomerDetails] = useState({});
+  const [statusFilter, setStatusFilter] = useState("");
 
   const limit = 10;
 
@@ -160,7 +161,9 @@ const EntryList = () => {
     try {
       await axios.put(
         `https://dirt-off-backend-main.vercel.app/entry/update/${id}`,
-        { status: newStatus }
+        {
+          status: newStatus,
+        }
       );
       toast.success("Status updated successfully");
       if (isSearching) {
@@ -193,8 +196,11 @@ Hello *${entry.customer}*
  Receipt No: *${entry.receiptNo || "N/A"}*
  Products: *${entry.products.map((p) => p.productName).join(", ")}*
  Total Amount: *₹${entry.charges?.totalAmount?.toFixed(2)}*
- Status: *${entry.status || "pending"}*
- Expected Delivery: *${expectedDelivery}*
+Status: ${entry.status || "pending"}${
+      entry.status !== "delivered"
+        ? `\nExpected Delivery: ${expectedDelivery}`
+        : ""
+    }
 
  *Thank you for choosing DirtOff!*
 We truly appreciate your trust in our service! 
@@ -308,6 +314,21 @@ We truly appreciate your trust in our service!
         )}
       </div>
 
+      {/* Filter by Status */}
+      <div className="flex items-center mb-6 space-x-2">
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="border border-gray-300 px-4 py-2 rounded"
+        >
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="collected">Collected</option>
+          <option value="processedAndPacked">Processed & Packed</option>
+          <option value="delivered">Delivered</option>
+        </select>
+      </div>
+
       <>
         <div className="overflow-x-auto">
           <table className="min-w-full border border-[#e7e3f5] shadow-sm rounded-lg overflow-hidden">
@@ -324,11 +345,10 @@ We truly appreciate your trust in our service!
                 <th className="text-left px-4 py-2 whitespace-nowrap">
                   Rcpt No.
                 </th>
-                <th className="text-left px-4 py-2 whitespace-nowrap">
+                <th className="text-left px-4 py-2 whitespace-nowrap w-24">
                   Customer
                 </th>
-                {/* <th className="text-left px-4  whitespace-nowrappy-2">Service</th> */}
-                <th className="text-left px-4 py-2 whitespace-nowrap">
+                <th className="text-left px-4 py-2 whitespace-nowrap w-64">
                   Products
                 </th>
                 <th className="text-left px-4 py-2 whitespace-nowrap">
@@ -357,101 +377,107 @@ We truly appreciate your trust in our service!
                     </div>
                   </td>
                 </tr>
-              ) : entries.length === 0 ? (
+              ) : entries.filter(
+                  (entry) => !statusFilter || entry.status === statusFilter
+                ).length === 0 ? (
                 <tr>
                   <td colSpan="8" className="text-center py-8 text-gray-500">
                     No entries found.
                   </td>
                 </tr>
               ) : (
-                entries.map((entry, index) => (
-                  <tr key={entry._id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 border text-center">
-                      <p> {entry.receiptNo || "N/A"}</p>
-                    </td>
-                    <td className="px-4 py-2 border w-48">
-                      {entry.customerId
-                        ? customerDetails[entry.customerId] || entry.customer
-                        : entry.customer}
-                    </td>
+                entries
+                  .filter(
+                    (entry) => !statusFilter || entry.status === statusFilter
+                  )
+                  .map((entry, index) => (
+                    <tr key={entry._id} className="hover:bg-gray-50">
+                      <td className="px-4 py-2 border text-center">
+                        <p> {entry.receiptNo || "N/A"}</p>
+                      </td>
+                      <td className="px-4 py-2 border w-24">
+                        {entry.customerId
+                          ? customerDetails[entry.customerId] || entry.customer
+                          : entry.customer}
+                      </td>
+                      <td className="px-2 py-2 border w-64">
+                        <textarea
+                          value={entry.products
+                            .map((p) => p.productName)
+                            .join(", ")}
+                          readOnly
+                          className="w-full border-none bg-transparent text-xs sm:text-sm text-gray-700"
+                          rows="3"
+                          cols="10"
+                          style={{ scrollbarWidth: "none" }}
+                        />
+                      </td>
 
-                    <td className="px-4 py-2 border">
-                      <textarea
-                        value={entry.products
-                          .map((p) => p.productName)
-                          .join(", ")}
-                        readOnly
-                        className="w-full border-none bg-transparent text-xs sm:text-sm text-gray-700"
-                        rows="3"
-                        cols="40"
-                      />
-                    </td>
-
-                    <td className="px-4 py-2 border">
-                      ₹ {entry.charges?.totalAmount?.toFixed(2)}
-                    </td>
-                    <td className="px-4 py-2 border">
-                      {entry.pickupAndDelivery?.pickupType === "Self"
-                        ? "Self"
-                        : entry.pickupAndDelivery?.pickupAddress ||
-                          entry.pickupAndDelivery?.pickupType}
-                    </td>
-                    <td className="px-4 py-2 border">
-                      {entry.pickupAndDelivery?.deliveryType === "Self"
-                        ? "Self"
-                        : entry.pickupAndDelivery?.deliveryAddress ||
-                          entry.pickupAndDelivery?.deliveryType}
-                    </td>
-                    <td className="px-4 py-2 border">
-                      <select
-                        value={entry.status || "pending"}
-                        onChange={(e) =>
-                          handleStatusChange(entry._id, e.target.value)
-                        }
-                        className="border px-2 py-1 rounded text-xs w-24 text-center"
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="collected">Collected</option>
-                      </select>
-                    </td>
-                    <td className="px-4 py-2 border text-center">
-                      <div className="flex justify-around items-center">
-                        <Link
-                          to={`/entryform/${entry._id}`}
-                          className="text-sm text-[#a997cb] hover:text-[#8a82b5] inline-flex hover:underline mr-4"
+                      <td className="px-4 py-2 border">
+                        ₹ {entry.charges?.totalAmount?.toFixed(2)}
+                      </td>
+                      <td className="px-4 py-2 border">
+                        {entry.pickupAndDelivery?.pickupType === "Self"
+                          ? "Self"
+                          : entry.pickupAndDelivery?.pickupAddress ||
+                            entry.pickupAndDelivery?.pickupType}
+                      </td>
+                      <td className="px-4 py-2 border">
+                        {entry.pickupAndDelivery?.deliveryType === "Self"
+                          ? "Self"
+                          : entry.pickupAndDelivery?.deliveryAddress ||
+                            entry.pickupAndDelivery?.deliveryType}
+                      </td>
+                      <td className="px-4 py-2 border">
+                        <select
+                          value={entry.status || "pending"}
+                          onChange={(e) =>
+                            handleStatusChange(entry._id, e.target.value)
+                          }
+                          className="border px-2 py-1 rounded text-xs w-24 text-center"
                         >
-                          <FaEdit />
-                        </Link>
-                        <button
-                          onClick={() => toggleVisibility(entry._id)}
-                          className="text-sm text-red-600 hover:underline"
-                        >
-                          <FaTrashAlt />
-                        </button>
-                        <Link
-                          to={`/LaundryBill/${entry._id}`}
-                          className="text-sm pl-3 text-[#7f59c5] hover:text-[#8a82b5] hover:underline mr-4"
-                        >
-                          <RiNewspaperLine />
-                        </Link>
-                        <button
-                          onClick={() => handleWhatsAppShare(entry)}
-                          className="text-sm text-green-600 hover:text-green-800 mr-4"
-                          title="Share on WhatsApp"
-                        >
-                          <FaWhatsapp />
-                        </button>
-                        <Link
-                          to={`/qr-tags/${entry._id}`}
-                          className="text-sm text-[#7f59c5] hover:text-[#8a82b5] inline-flex hover:underline mr-4"
-                        >
-                          <BsQrCode />
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                          <option value="pending">Pending</option>
+                          <option value="delivered">Delivered</option>
+                          <option value="collected">Collected</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-2 border text-center">
+                        <div className="flex justify-around items-center">
+                          <Link
+                            to={`/entryform/${entry._id}`}
+                            className="text-sm text-[#a997cb] hover:text-[#8a82b5] inline-flex hover:underline mr-4"
+                          >
+                            <FaEdit />
+                          </Link>
+                          <button
+                            onClick={() => toggleVisibility(entry._id)}
+                            className="text-sm text-red-600 hover:underline"
+                          >
+                            <FaTrashAlt />
+                          </button>
+                          <Link
+                            to={`/LaundryBill/${entry._id}`}
+                            className="text-sm pl-3 text-[#7f59c5] hover:text-[#8a82b5] hover:underline mr-4"
+                          >
+                            <RiNewspaperLine />
+                          </Link>
+                          <button
+                            onClick={() => handleWhatsAppShare(entry)}
+                            className="text-sm text-green-600 hover:text-green-800 mr-4"
+                            title="Share on WhatsApp"
+                          >
+                            <FaWhatsapp />
+                          </button>
+                          <Link
+                            to={`/qr-tags/${entry._id}`}
+                            className="text-sm text-[#7f59c5] hover:text-[#8a82b5] inline-flex hover:underline mr-4"
+                          >
+                            <BsQrCode />
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
               )}
             </tbody>
           </table>

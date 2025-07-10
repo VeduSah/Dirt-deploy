@@ -134,7 +134,9 @@ const LaundryBill = () => {
         </div>
 
         {/* Smaller Logo */}
-        <img src={logoUrl} className="h-16 mb-4" alt="Logo" />
+        <div className="flex justify-center mb-4 sm:justify-start">
+          <img src={logoUrl} className="h-28 mb-4" alt="Logo" />
+        </div>
 
         <p className="text-sm text-gray-600 mb-1 leading-relaxed">
           <span className="font-semibold">Billing Address: </span>
@@ -242,10 +244,11 @@ const LaundryBill = () => {
             {charges.taxAmount}
           </p>
           <p>
-            <span className="font-semibold">Discount:</span>{" "}
-            {billData.discountType === "percent"
-              ? `${billData.discount || 0}%`
-              : `₹${billData.discount || 0}`}
+            <span className="font-semibold">Discount:</span> ₹
+            {(
+              (charges.subtotal + charges.taxAmount) *
+              ((billData.discount || 0) / 100)
+            ).toFixed(2)}
           </p>
           <p className="text-xl font-bold">
             Total Amount: ₹{charges.totalAmount.toFixed(2)}
