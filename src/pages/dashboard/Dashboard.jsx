@@ -22,6 +22,7 @@ const Dashboard = () => {
     totalSales: 0,
     todayExpected: 0,
     collectedOrders: 0,
+    processedOrders: 0,
   });
 
   const [loading, setLoading] = useState(true);
@@ -35,6 +36,7 @@ const Dashboard = () => {
   const [deliveryData, setDeliveryData] = useState({
     pending: { orders: [], page: 1, totalPages: 1 },
     collected: { orders: [], page: 1, totalPages: 1 },
+    processedAndPacked: { orders: [], page: 1, totalPages: 1 },
     delivered: { orders: [], page: 1, totalPages: 1 },
     todayExpectedDeliveries: { orders: [], page: 1, totalPages: 1 },
     todayReceivedOrders: { orders: [], page: 1, totalPages: 1 },
@@ -43,6 +45,7 @@ const Dashboard = () => {
   const [currentPages, setCurrentPages] = useState({
     pending: 1,
     collected: 1,
+    processedAndPacked: 1,
     delivered: 1,
     todayExpected: 1,
     todayReceived: 1,
@@ -94,6 +97,7 @@ const Dashboard = () => {
         todayExpected: data.todayExpectedCount || 0,
         pendingOrders: data.pendingCount || 0,
         collectedOrders: data.collectedCount || 0,
+        processedOrders: data.processedAndPackedCount || 0,
         deliveredOrders: data.deliveredCount || 0,
       }));
     } catch (error) {
@@ -149,6 +153,7 @@ const Dashboard = () => {
       todayExpected: "todayExpected",
       pending: "pending",
       collected: "collected",
+      processed: "processedAndPacked",
       delivered: "delivered",
     };
 
@@ -219,13 +224,13 @@ const Dashboard = () => {
   };
 
   // Add this function after the existing functions
-  const handleMarkAsCollected = async (orderId) => {
+  const handleMarkAsProcessedAndPacked = async (orderId) => {
     setMarkLoading(true);
     try {
       await axios.put(
         `https://dirt-off-backend-main.vercel.app/entry/update/${orderId}`,
         {
-          status: "delivered",
+          status: "processedAndPacked",
         }
       );
 
@@ -241,15 +246,8 @@ const Dashboard = () => {
       }
       // Refresh delivery summary
       await fetchDeliverySummary();
-
-      // Update stats
-      // setStats((prev) => ({
-      //   ...prev,
-      //   todayExpected: prev.todayExpected - 1,
-      //   collectedOrders: prev.collectedOrders + 1,
-      // }));
     } catch (error) {
-      console.error("Failed to mark as collected:", error);
+      console.error("Failed to mark as processed and packed:", error);
     } finally {
       setMarkLoading(false);
     }
@@ -283,6 +281,35 @@ const Dashboard = () => {
       }));
     } catch (error) {
       console.error("Failed to mark as collected:", error);
+    } finally {
+      setMarkLoading(false);
+    }
+  };
+
+  const handleMarkAsDelivered = async (orderId) => {
+    setMarkLoading(true);
+    try {
+      await axios.put(
+        `https://dirt-off-backend-main.vercel.app/entry/update/${orderId}`,
+        {
+          status: "delivered",
+        }
+      );
+
+      // Refresh the processed data if currently viewing processed orders
+      if (activeView === "processed") {
+        const processedRes = await axios.get(
+          `https://dirt-off-backend-main.vercel.app/entry/pending/deliveries?type=processedAndPacked&page=${currentPages.processedAndPacked}`
+        );
+        setDeliveryData((prev) => ({
+          ...prev,
+          processedAndPacked: processedRes.data.data,
+        }));
+      }
+      // Refresh delivery summary
+      await fetchDeliverySummary();
+    } catch (error) {
+      console.error("Failed to mark as delivered:", error);
     } finally {
       setMarkLoading(false);
     }
@@ -408,6 +435,105 @@ const Dashboard = () => {
                     deliveryData.todayReceivedOrders.totalPages
                   }
                   className="px-3 py-1 bg-purple-100 text-purple-600 rounded disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </div>
+        );
+
+      case "processed":
+        return (
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <FaWater className="text-indigo-500" />
+                Processed and Packed
+              </h3>
+              <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
+                {deliveryData.processedAndPacked.count || 0} orders
+              </span>
+            </div>
+            <div className="space-y-4">
+              {listLoading ? (
+                <Loader />
+              ) : deliveryData.processedAndPacked.orders?.length > 0 ? (
+                deliveryData.processedAndPacked.orders.map((order, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center px-4 py-2 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-lg border-l-4 border-indigo-400 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-indigo-200 rounded-full flex items-center justify-center">
+                        <span className="text-indigo-700 font-bold text-lg">
+                          {(order.customer || "C").charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-800">
+                          {order.customer || "Customer"}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Receipt #{order.receiptNo}
+                        </p>
+                        <p className="text-xs text-indigo-600 font-medium">
+                          ₹{order.charges?.totalAmount || 0}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <button
+                        onClick={() => handleMarkAsDelivered(order._id)}
+                        className="text-sm bg-green-600 text-white px-2 py-1 rounded-full hover:bg-green-700 transition-colors"
+                      >
+                        Mark Delivered
+                      </button>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <FaWater className="text-gray-300 text-5xl mx-auto mb-4" />
+                  <p className="text-gray-500 text-lg">
+                    No processed orders yet
+                  </p>
+                </div>
+              )}
+            </div>
+            {deliveryData.processedAndPacked.totalPages > 1 && (
+              <div className="flex justify-center mt-4 space-x-2">
+                <button
+                  onClick={() =>
+                    handlePageChange(
+                      "processedAndPacked",
+                      currentPages.processedAndPacked - 1
+                    )
+                  }
+                  disabled={currentPages.processedAndPacked === 1}
+                  className="px-3 py-1 bg-indigo-100 text-indigo-600 rounded disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <span className="px-3 py-1">
+                  {currentPages.processedAndPacked} of{" "}
+                  {deliveryData.processedAndPacked.totalPages}
+                </span>
+                <button
+                  onClick={() =>
+                    handlePageChange(
+                      "processedAndPacked",
+                      currentPages.processedAndPacked + 1
+                    )
+                  }
+                  disabled={
+                    currentPages.processedAndPacked ===
+                    deliveryData.processedAndPacked.totalPages
+                  }
+                  className="px-3 py-1 bg-indigo-100 text-indigo-600 rounded disabled:opacity-50"
                 >
                   Next
                 </button>
@@ -742,10 +868,12 @@ const Dashboard = () => {
                     </div>
                     <div className="text-right">
                       <button
-                        onClick={() => handleMarkAsCollected(order._id)}
-                        className="px-2  bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+                        onClick={() =>
+                          handleMarkAsProcessedAndPacked(order._id)
+                        }
+                        className="px-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
                       >
-                        Mark Delivered
+                        Processed and Packed
                       </button>
                       <p className="text-xs text-gray-500 mt-1">
                         {order.pickupAndDelivery?.pickupDate
@@ -1225,17 +1353,40 @@ const Dashboard = () => {
                   <h3 className="text-2xl font-bold text-gray-800">
                     {stats.collectedOrders}
                   </h3>
-                  <p className="text-purple-500 text-xs mt-1">
-                    Ready for pickup
+                  <p className="text-orange-500 text-xs mt-1">
+                    Ready for delivery
                   </p>
                 </div>
-                <div className="bg-purple-100 p-4 rounded-full">
-                  <FaTshirt className="text-purple-500 text-xl" />
+                <div className="bg-orange-100 p-4 rounded-full">
+                  <FaTshirt className="text-orange-500 text-xl" />
                 </div>
               </div>
             </div>
 
-            {/* Total Deliveries */}
+            {/* Processed and Packed */}
+            <div
+              onClick={() => handleCardClick("processed")}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 hover:shadow-xl transition-shadow cursor-pointer"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-sm font-medium">
+                    Processed and Packed
+                  </p>
+                  <h3 className="text-2xl font-bold text-gray-800">
+                    {stats.processedOrders}
+                  </h3>
+                  <p className="text-indigo-500 text-xs mt-1">
+                    To be delivered
+                  </p>
+                </div>
+                <div className="bg-indigo-100 p-4 rounded-full">
+                  <FaWater className="text-indigo-500 text-xl" />
+                </div>
+              </div>
+            </div>
+
+            {/* Delivered Orders */}
             <div
               onClick={() => handleCardClick("delivered")}
               className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 hover:shadow-xl transition-shadow cursor-pointer"
@@ -1243,40 +1394,41 @@ const Dashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-500 text-sm font-medium">
-                    Total Deliveries
+                    Delivered Orders
                   </p>
                   <h3 className="text-2xl font-bold text-gray-800">
                     {stats.deliveredOrders}
                   </h3>
-                  <p className="text-purple-500 text-xs mt-1">
-                    ↗ +8% from yesterday
-                  </p>
+                  <p className="text-green-500 text-xs mt-1">Completed</p>
                 </div>
-                <div className="bg-purple-100 p-4 rounded-full">
-                  <FaTruck className="text-purple-500 text-xl" />
+                <div className="bg-green-100 p-4 rounded-full">
+                  <FaTruck className="text-green-500 text-xl" />
                 </div>
               </div>
             </div>
+          </div>
 
+          {/* Third Row - Total Sales (Full Width) */}
+          <div className="grid grid-cols-1 gap-6">
             {/* Total Sales */}
             <div
-              onClick={() => setActiveView("sales")}
-              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-600 hover:shadow-xl transition-shadow cursor-pointer"
+              onClick={() => handleCardClick("sales")}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 hover:shadow-xl transition-shadow cursor-pointer"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-500 text-sm font-medium">
                     Total Sales
                   </p>
-                  <h3 className="text-2xl font-bold text-gray-800">
+                  <h3 className="text-3xl font-bold text-gray-800">
                     ₹{stats.totalSales.toLocaleString()}
                   </h3>
-                  <p className="text-purple-600 text-xs mt-1">
-                    ↗ +15% from last month
+                  <p className="text-purple-500 text-xs mt-1">
+                    ↗ +8% from last month
                   </p>
                 </div>
                 <div className="bg-purple-100 p-4 rounded-full">
-                  <FaChartLine className="text-purple-600 text-xl" />
+                  <FaChartLine className="text-purple-500 text-2xl" />
                 </div>
               </div>
             </div>

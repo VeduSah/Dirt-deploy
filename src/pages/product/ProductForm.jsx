@@ -102,9 +102,8 @@ const ProductForm = () => {
       ServiceCharge: formData.ServiceCharge.map((item) => ({
         service: item.service,
         charge: parseFloat(item.charge) || 0,
-        tax: parseFloat(item.tax) || 0, // Include tax for each service charge
       })),
-      tax: parseFloat(formData.ServiceCharge[0].tax) || 0, // Keep the top-level tax
+      tax: parseFloat(formData.tax) || 0, // Keep the top-level tax
     };
 
     const url = id
@@ -185,13 +184,13 @@ const ProductForm = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-[#a997cb]">
-              Tax
+              Tax %
             </label>
             <input
               name="tax"
               type="number"
               value={formData.tax}
-              onChange={(e) => handleServiceChargeChange(0, e)}
+              onChange={handleChange}
               placeholder="Tax percentage"
               className="mt-1 block w-full border border-gray-300 rounded px-3 py-2 text-sm"
             />
