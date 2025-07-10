@@ -160,7 +160,9 @@ const EntryList = () => {
     try {
       await axios.put(
         `https://dirt-off-backend-main.vercel.app/entry/update/${id}`,
-        { status: newStatus }
+        {
+          status: newStatus,
+        }
       );
       toast.success("Status updated successfully");
       if (isSearching) {
@@ -193,8 +195,11 @@ Hello *${entry.customer}*
  Receipt No: *${entry.receiptNo || "N/A"}*
  Products: *${entry.products.map((p) => p.productName).join(", ")}*
  Total Amount: *₹${entry.charges?.totalAmount?.toFixed(2)}*
- Status: *${entry.status || "pending"}*
- Expected Delivery: *${expectedDelivery}*
+Status: ${entry.status || "pending"}${
+      entry.status !== "delivered"
+        ? `\nExpected Delivery: ${expectedDelivery}`
+        : ""
+    }
 
  *Thank you for choosing DirtOff!*
 We truly appreciate your trust in our service! 
