@@ -12,7 +12,6 @@ import { AiFillCloseCircle, AiOutlineMenu } from "react-icons/ai";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import LaundryBill from "./pages/LaudryBill/LaundryBill";
-import logo from "./assets/pcs.png";
 import CustomerForm1 from "./pages/CustomerForm";
 import CustomerList1 from "./pages/CustomerList";
 import InvoiceForm from "./pages/InvoiceForm";
@@ -173,10 +172,11 @@ const App = () => {
               </div>
               <div className="mt-8 text-center">
                 <img
-                  src={logo}
+                  src="/Dirt_off_1.png"
                   alt="admin"
                   className="m-auto h-20 w-[11rem] object-contain lg:h-28 lg:w-[11rem]"
                 />
+
                 <p className="mb-4 text-xs sm:text-sm bg-purple-100 text-purple-700 px-2 py-1 rounded-full inline-block capitalize font-medium">
                   {userRole}
                 </p>
