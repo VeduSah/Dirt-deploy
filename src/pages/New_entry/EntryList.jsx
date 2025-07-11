@@ -216,9 +216,9 @@ We truly appreciate your trust in our service!
 
     // Try different WhatsApp URLs
     const urls = [
-      `https://web.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(
-        message
-      )}`,
+      // `https://web.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(
+      //   message
+      // )}`,
       `https://api.whatsapp.com/send/?phone=${phoneNumber}&text=${encodeURIComponent(
         message
       )}`,
