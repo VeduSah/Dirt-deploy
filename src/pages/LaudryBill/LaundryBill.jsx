@@ -105,8 +105,8 @@ const LaundryBill = () => {
     gstin: " 09AAYFD0845J1ZV",
   };
 
-  const dateOfCollecting = new Date(createdAt).toLocaleDateString();
-  const dateOfDelivering = new Date().toLocaleDateString();
+  const dateOfCollecting = new Date(createdAt).toLocaleDateString("en-GB");
+  const dateOfDelivering = new Date().toLocaleDateString("en-GB");
   const terms = "No refund after payment.";
 
   return (
