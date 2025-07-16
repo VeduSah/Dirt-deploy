@@ -105,9 +105,13 @@ const LaundryBill = () => {
     gstin: " 09AAYFD0845J1ZV",
   };
 
-  const dateOfCollecting = new Date(createdAt).toLocaleDateString("en-GB");
-  const dateOfDelivering = new Date().toLocaleDateString("en-GB");
-  const terms = "No refund after payment.";
+  const dateOfCollecting = pickupAndDelivery.pickupDate
+    ? new Date(pickupAndDelivery.pickupDate).toLocaleDateString("en-GB")
+    : "Waiting to be collected";
+
+  const dateOfDelivering = pickupAndDelivery.deliveryDate
+    ? new Date(pickupAndDelivery.deliveryDate).toLocaleDateString("en-GB")
+    : "Waiting to be delivered";
 
   return (
     <div className="p-2 md:p-6">
@@ -189,10 +193,14 @@ const LaundryBill = () => {
               <span className="font-semibold">Receipt No.:</span>{" "}
               {billData.receiptNo}
             </p>
-            <p>
-              <span className="font-semibold">Date of Collecting:</span>{" "}
-              {dateOfCollecting}
-            </p>
+            {!(
+              pickupAndDelivery.deliveryDate && !pickupAndDelivery.pickupDate
+            ) && (
+              <p>
+                <span className="font-semibold">Date of Collecting:</span>{" "}
+                {dateOfCollecting}
+              </p>
+            )}
             <p>
               <span className="font-semibold">Date of Delivering:</span>{" "}
               {dateOfDelivering}
@@ -257,7 +265,7 @@ const LaundryBill = () => {
 
         <div className="pt-4 text-sm flex justify-between">
           <p>
-            <span className="font-semibold">Terms & Condition:</span> {terms}
+            <span className="font-semibold">Terms & Condition:</span>
           </p>
 
           <p className="m-10 font-semibold">Seal & Signature</p>
