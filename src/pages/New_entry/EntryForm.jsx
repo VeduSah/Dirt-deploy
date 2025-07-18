@@ -19,6 +19,7 @@ const EntryForm = () => {
     charges: { subtotal: 0, taxAmount: 0, totalAmount: 0 },
     discount: 0,
     taxPercent: 0,
+    remarks: "",
     pickupAndDelivery: {
       pickupType: "Self",
       deliveryType: "Self",
@@ -757,6 +758,19 @@ const EntryForm = () => {
             onChange={handleChange}
             min={new Date().toISOString().split("T")[0]}
             className="w-full border px-3 py-2 rounded"
+          />
+        </div>
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Remarks
+          </label>
+          <textarea
+            name="remarks"
+            value={formData.remarks || ""}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            placeholder="Add any additional notes or remarks"
+            rows="3"
           />
         </div>
 

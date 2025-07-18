@@ -188,6 +188,13 @@ const EntryList = () => {
         ).toLocaleDateString()
       : "TBD";
 
+    // Include remarks if status is pending or collected and remarks exist
+    const remarksSection =
+      (entry.status === "pending" || entry.status === "collected") &&
+      entry.remarks
+        ? `\n *Remarks:* ${entry.remarks}`
+        : "";
+
     const message = ` *DirtOff Laundry Services*
 
 Hello *${entry.customer}* 
@@ -200,7 +207,7 @@ Status: ${entry.status || "pending"}${
       entry.status !== "delivered"
         ? `\nExpected Delivery: ${expectedDelivery}`
         : ""
-    }
+    }${remarksSection}
 
  *Thank you for choosing DirtOff!*
 We truly appreciate your trust in our service! 
