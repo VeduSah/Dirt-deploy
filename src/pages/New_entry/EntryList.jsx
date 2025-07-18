@@ -214,21 +214,19 @@ We truly appreciate your trust in our service!
       phoneNumber = "91" + phoneNumber;
     }
 
-    // Try different WhatsApp URLs
-    const urls = [
-      // `https://web.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(
-      //   message
-      // )}`,
-      `https://api.whatsapp.com/send/?phone=${phoneNumber}&text=${encodeURIComponent(
-        message
-      )}`,
-      `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(
-        message
-      )}`,
-    ];
+    // Check screen width to determine which URL to use
+    const isMobile = window.innerWidth < 800;
 
-    // Try opening the first URL, if it fails, user can manually copy
-    window.open(urls[0], "_blank");
+    const whatsappUrl = isMobile
+      ? `https://api.whatsapp.com/send/?phone=${phoneNumber}&text=${encodeURIComponent(
+          message
+        )}`
+      : `https://web.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(
+          message
+        )}`;
+
+    // Open the appropriate URL
+    window.open(whatsappUrl, "_blank");
 
     // Also copy to clipboard as backup
     navigator.clipboard.writeText(message).then(() => {
