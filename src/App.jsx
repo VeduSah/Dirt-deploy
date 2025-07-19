@@ -32,6 +32,7 @@ import EntryList from "./pages/New_entry/EntryList";
 import QrSection from "./pages/QrSection";
 import Dashboard from "./pages/dashboard/Dashboard";
 import CSV from "./pages/CSV";
+import PublicBill from "./pages/LaudryBill/PublicBill";
 const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,6 +62,9 @@ const App = () => {
   };
   console.log(currentUser);
 
+  // Check if the current route is the bill route
+  const isBillRoute = location.pathname.startsWith("/bill/");
+
   useEffect(() => {
     const currentUserRole = localStorage.getItem("userRole");
     console.log(
@@ -81,7 +85,7 @@ const App = () => {
       //     navigate("/entrylist");
       //   }
     }
-  }, [currentUser, location.pathname]);
+  }, [currentUser, location.pathname, isBillRoute]);
 
   useEffect(() => {
     const path = location.pathname.toLowerCase();
@@ -114,6 +118,19 @@ const App = () => {
       }
     }
   };
+
+  // If it's a bill route, render only the PublicBill component without the sidebar and header
+  if (isBillRoute) {
+    return (
+      <>
+        <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+        <Routes>
+          <Route path="/bill/:id" element={<PublicBill />} />
+        </Routes>
+      </>
+    );
+  }
+
   return (
     <>
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />

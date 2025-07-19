@@ -1,17 +1,17 @@
+// src/pages/LaudryBill/PublicBill.jsx
 import React, { useRef, useEffect, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import axios from "axios";
-import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
 import Loader from "/src/pages/Loader";
-import { useParams, useNavigate } from "react-router-dom";
 
-const LaundryBill = () => {
+const PublicBill = () => {
   const { id } = useParams();
+
   const printRef = useRef();
   const [loading, setLoading] = useState(true);
   const [billData, setBillData] = useState(null);
   const [customerInfo, setCustomerInfo] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBillData = async () => {
@@ -21,7 +21,6 @@ const LaundryBill = () => {
         );
         const entry = res.data.data;
         setBillData(entry);
-        console.log("bill data", entry);
 
         // Now fetch customer details by customerId
         if (entry.customerId) {
@@ -31,7 +30,7 @@ const LaundryBill = () => {
           setCustomerInfo(customerRes.data.data);
         }
       } catch (error) {
-        toast.error("Failed to load bill data");
+        console.error("Failed to load bill data");
       } finally {
         setLoading(false);
       }
@@ -83,22 +82,19 @@ const LaundryBill = () => {
     return (
       <p className="text-center mt-10 text-red-600">No bill data available.</p>
     );
+  if (!customerInfo)
+    return (
+      <p className="text-center mt-10 text-red-600">
+        Customer information not available.
+      </p>
+    );
 
-  const {
-    customer,
-    service,
-    products,
-    charges,
-    pickupAndDelivery,
-    createdAt,
-    receiptNo, // Use the receiptNo from the bill data
-  } = billData;
-  // console.log("sabdj" + billData.receiptNo);
-  // Dummy placeholders
+  const { products, charges, pickupAndDelivery, receiptNo } = billData;
+
   const logoUrl = "/Dirt_off_1.png";
   const partyDetails = {
     address:
-      "Near Surmount International, Junior Wing, Taramandal, Gorakhpur, 273017",
+      "Near Surmount International, Junior Wing, Taramandal, Gorakhpur, 273017",
     name: "DIRTOFF",
     phone: "7311196660",
     email: "team.dirtoff@gmail.com",
@@ -114,20 +110,16 @@ const LaundryBill = () => {
     : "Waiting to be delivered";
 
   return (
-    <div className="p-2 md:p-6">
+    <div
+      id="public-bill-root"
+      className="p-2 md:p-6 bg-white max-w-4xl mx-auto"
+    >
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={handlePrint}
           className="bg-[#a997cb] text-white px-5 py-2 rounded hover:bg-[#8a82b5] transition disabled:opacity-50"
         >
           Print Invoice
-        </button>
-
-        <button
-          onClick={() => navigate("/entrylist")}
-          className="bg-[#a997cb] text-white px-5 py-2 rounded hover:bg-[#8a82b5] transition"
-        >
-          ← Back
         </button>
       </div>
 
@@ -152,15 +144,15 @@ const LaundryBill = () => {
           {partyDetails.name}
         </p>
         <p className="text-sm text-gray-600 mb-1">
-          <spam className="font-semibold">Phone No.: </spam>{" "}
+          <span className="font-semibold">Phone No.: </span>{" "}
           {partyDetails.phone}
         </p>
         <p className="text-sm text-gray-600 mb-1">
-          <spam className="font-semibold">Email ID: </spam>
+          <span className="font-semibold">Email ID: </span>
           {partyDetails.email}
         </p>
         <p className="text-sm text-gray-600 mb-4">
-          <spam className="font-semibold"> GSTIN No.: </spam>{" "}
+          <span className="font-semibold"> GSTIN No.: </span>{" "}
           {partyDetails.gstin}
         </p>
 
@@ -271,7 +263,7 @@ const LaundryBill = () => {
           <p className="m-10 font-semibold">Seal & Signature</p>
         </div>
 
-        <div className="  text-sm text-gray-600">
+        <div className="text-sm text-gray-600">
           <p>
             <span className="font-semibold">Bank Name:</span> State Bank of
             India (SBI)
@@ -291,4 +283,4 @@ const LaundryBill = () => {
   );
 };
 
-export default LaundryBill;
+export default PublicBill;

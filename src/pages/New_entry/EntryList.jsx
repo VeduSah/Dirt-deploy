@@ -195,6 +195,9 @@ const EntryList = () => {
         ? `\n *Remarks:* ${entry.remarks}`
         : "";
 
+    // Create the public bill URL
+    const publicBillUrl = `${window.location.origin}/bill/${entry._id}`;
+
     const message = ` *DirtOff Laundry Services*
 
 Hello *${entry.customer}* 
@@ -208,6 +211,9 @@ Status: ${entry.status || "pending"}${
         ? `\nExpected Delivery: ${expectedDelivery}`
         : ""
     }${remarksSection}
+    
+       *View your bill online:*
+ ${publicBillUrl}
 
  *Thank you for choosing DirtOff!*
 We truly appreciate your trust in our service! 
