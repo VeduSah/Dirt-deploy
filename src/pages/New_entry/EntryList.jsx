@@ -212,7 +212,7 @@ Status: ${entry.status || "pending"}${
         : ""
     }${remarksSection}
     
-       *View your bill online:*
+ *View your bill online:*
  ${publicBillUrl}
 
  *Thank you for choosing DirtOff!*
