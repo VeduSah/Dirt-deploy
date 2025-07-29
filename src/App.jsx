@@ -74,18 +74,14 @@ const App = () => {
       location.pathname
     );
 
-    if (!currentUser && !location.pathname.includes("/LaundryBill")) {
+    if (
+      !currentUser &&
+      !location.pathname.includes("/LaundryBill") &&
+      !location.pathname.startsWith("/bill/")
+    ) {
       navigate("/login");
-      // }
-      // else if (currentUser && location.pathname === "/") {
-      //   const userRole = localStorage.getItem("userRole");
-      //   if (userRole === "admin") {
-      //     navigate("/dashboard");
-      //   } else {
-      //     navigate("/entrylist");
-      //   }
     }
-  }, [currentUser, location.pathname, isBillRoute]);
+  }, [currentUser, location.pathname]);
 
   useEffect(() => {
     const path = location.pathname.toLowerCase();
@@ -120,16 +116,16 @@ const App = () => {
   };
 
   // If it's a bill route, render only the PublicBill component without the sidebar and header
-  if (isBillRoute) {
-    return (
-      <>
-        <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-        <Routes>
-          <Route path="/bill/:id" element={<PublicBill />} />
-        </Routes>
-      </>
-    );
-  }
+  // if (isBillRoute) {
+  //   return (
+  //     <>
+  //       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+  //       <Routes>
+  //         <Route path="/bill/:id" element={<PublicBill />} />
+  //       </Routes>
+  //     </>
+  //   );
+  // }
 
   return (
     <>
@@ -707,6 +703,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/LaundryBill" element={<LaundryBill />} />
             <Route path="/LaundryBill/:id" element={<LaundryBill />} />
+            <Route path="/bill/:id" element={<PublicBill />} />
           </Routes>
         </>
       )}
